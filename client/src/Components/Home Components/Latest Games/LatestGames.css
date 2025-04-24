@@ -1,0 +1,16 @@
+.LastestGames {
+    background-color: white;
+    border-radius: 5px;
+    max-height: 500px;
+}
+
+.latest-games-icon {
+    height: 50px;
+    width: 50px;
+    margin-left: 20px;
+    margin-right: 4px;
+}
+
+div.scrollingDiv {
+    overflow: scroll;
+}

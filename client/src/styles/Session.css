@@ -1,0 +1,82 @@
+/* Session.css */
+.tableContainer {
+  margin: 20px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  flex-grow: 1; 
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%; 
+}
+
+.tableHead {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.tableRow:nth-of-type(even) {
+  background-color: #f5f5f5;
+}
+
+.tableCell {
+  padding: 15px;
+  text-align: left;
+  font-size: 16px;
+}
+
+.iconButton {
+  color: #4a90e2;
+}
+
+.iconButton:hover {
+  color: #3e8ec7;
+}
+
+.actionIcon {
+  font-size: 24px;
+}
+
+.Session {
+  display: flex;
+  flex-direction: row; /* Changed to row to position elements side by side */
+  justify-content: flex-start;
+  align-items: flex-start; /* Adjust alignment */
+  height: 100%;
+  padding-left: 0px; /* Adjust this value to match the width of your navbar */
+  margin-top: 20px; /* Adjust if necessary for spacing from the top */
+}
+
+/* Adjust this class to handle the layout for the entire page, not just the session component */
+.pageLayout {
+  display: flex;
+  height: 100vh;
+}
+
+.navBar {
+  width: 250px; /* Adjust this width to match your actual NavBar width */
+  flex-shrink: 0; /* Prevent the navbar from shrinking */
+  height: 100vh; /* Full height */
+}
+
+.contentArea {
+  flex-grow: 1; /* Allows the content area to take up the remaining space */
+  overflow-y: auto; /* Allows scrolling if the table is taller than the viewport */
+}
+
+
+/* Styles for the menu */
+#simple-menu {
+  border-radius: 5px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for menu items */
+.MuiMenuItem-root {
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+.MuiMenuItem-root:hover {
+  background-color: #e0e0e0;
+}

@@ -1,0 +1,121 @@
+.BookingCalendar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    font-size: 100%;
+    margin-left: 38vh;
+    margin-top: 22%;
+    padding: 0%;
+}
+
+/* Improved styles for the FullCalendar container */
+.BookingCalendar .fc {
+    width: 90%; /* Adjusted for a better look */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    border-radius: 10px; /* Rounded corners for a modern look */
+    overflow: hidden; /* Ensures the shadow and border radius applies nicely */
+    transition: box-shadow 0.3s; 
+    margin-top: -25%;
+    padding: 0%;
+}
+
+/* Enhanced styles for the FullCalendar buttons */
+.BookingCalendar .fc button {
+    margin: 0 5px;
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+/* Refined styles for the FullCalendar event content */
+.BookingCalendar .fc-event {
+    background-color: #4a90e2; /* A softer blue for a modern look */
+    color: #ffffff;
+    border: none; /* Removed for a cleaner appearance */
+    border-radius: 5px;
+    padding: 10px; /* Increased padding for better readability */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth transitions for interaction */
+}
+
+/* Refined styles for the FullCalendar header */
+.BookingCalendar .fc-toolbar {
+    background:  #d8b131;
+    color: #fff;
+    padding: 15px; /* Increased padding for a spacious feel */
+    border-radius: 10px 10px 0 0; /* Rounded corners at the top */
+}
+
+.BookingCalendar .fc-toolbar .fc-button {
+    background-color: #ffffff;
+    color: #d8b131;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px; /* Increased padding for better touch targets */
+    font-weight: bold; /* Bold font for better readability */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+}
+
+/* Enhanced styles for the FullCalendar today button */
+.BookingCalendar .fc-toolbar .fc-today-button {
+    background-color: #2ecc71; /* A fresh green for the today button */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Styling for FullCalendar event content on hover */
+.BookingCalendar .fc-event:hover {
+    transform: translateY(-2px); /* Slight lift effect on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Increased shadow for a "raised" effect */
+}
+
+/* Updated styles for the FullCalendar event title */
+.BookingCalendar .fc-event-title {
+    font-size: 0.85rem; /* Slightly larger for readability */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Updated styles for the FullCalendar time text */
+.BookingCalendar .fc-event-time {
+    font-size: 0.85rem; /* Slightly larger for readability */
+    font-weight: bold; /* Bold for emphasis */
+}
+
+.BookingCalendar .fc-col-header-cell {
+    background: #d8b131;
+    color: #000000;
+    border: none;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    padding: 10px;
+}
+.BookingCalendar .fc-col-header-cell a{
+    text-decoration: none;
+   color:#fff;
+}
+
+.modalStyle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 10px 0;
+    max-height: 100;
+    width: 50; 
+  }
+.filter{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 10px 0;
+    max-height: 100;
+    width: 50; 
+    margin-right: 5% ;
+}

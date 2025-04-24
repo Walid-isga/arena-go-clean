@@ -1,0 +1,42 @@
+.Filter{
+    margin-left: 10px;
+    min-width: 200px;
+    width: 20%;
+    height: 70%;
+
+}
+.Search{
+    width: 70%;
+    height: 60%;
+    display: flex;
+}
+.FilterContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    margin: 5% 0 5% 0;
+    padding-right: 20px;
+    width: 100%;
+  }
+
+
+.fields{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    font-size: 3rem;
+    margin-left: 38vh;
+}
+
+.fab-bottom-left {
+    position: fixed;   /* Fixed position relative to the viewport */
+    display: flex;
+    justify-content: flex-end;
+    background-color: black !important; /* Black background */
+    color: white !important; /* White text color */
+}
+
+  
