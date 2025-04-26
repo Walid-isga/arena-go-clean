@@ -1,4 +1,7 @@
+// client/src/Components/NavBar.jsx
+
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { SidebarData } from "./SidebarData";
 import {
@@ -17,56 +20,42 @@ import {
 } from "@mui/material";
 import { toast } from "react-toastify";
 import axios from "axios";
+
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
 export default function NavBar() {
+  const { user, logout } = useAuth(); // 🔥 utiliser logout du contexte
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState({});
   const [pendingCount, setPendingCount] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const getUser = async () => {
-    try {
-      const res = await axios.get("http://localhost:8000/auth/login/success", {
-        withCredentials: true,
-      });
-      setUser(res.data.user);
-    } catch (err) {
-      console.log("Erreur user :", err);
-    }
-  };
-
   const fetchPendingBookings = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/booking/status/pending");
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await axios.get("http://localhost:8000/booking/status/pending", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setPendingCount(res.data.length);
     } catch (err) {
       console.error("Erreur fetch pending bookings", err);
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await axios.get("http://localhost:8000/auth/logout", {
-        withCredentials: true, // essentiel pour détruire la session côté serveur
-      });
-  
-      toast.success("Déconnecté !");
-      setTimeout(() => {
-        navigate("/login");
-        window.location.reload(); // 🔁 recharge la page pour nettoyer l’état local
-      }, 1000);
-    } catch (error) {
-      toast.error("Erreur lors de la déconnexion !");
-    }
-  
+  const handleLogout = () => {
+    logout(); // 🔥 vide le token et le user
+    toast.success("✅ Déconnecté !");
+    navigate("/login");
     handleClose();
-  };  
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -76,14 +65,12 @@ export default function NavBar() {
   };
 
   useEffect(() => {
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    if (user.isAdmin) {
+    if (user && user.isAdmin) {
       fetchPendingBookings();
     }
   }, [location, user]);
+
+  if (!user) return null; // 🔥 Protège contre affichage vide
 
   return (
     <Box
@@ -99,18 +86,16 @@ export default function NavBar() {
         borderBottom: "1px solid #333",
       }}
     >
-      {/* Logo + Titre */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <Typography
           variant="h6"
           sx={{ fontWeight: "bold", cursor: "pointer" }}
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/home")}
         >
           Sportify
         </Typography>
       </Box>
 
-      {/* Navigation */}
       <List sx={{ display: "flex", gap: 3 }}>
         {SidebarData.map((item, index) => (
           <ListItem disablePadding key={index}>
@@ -121,28 +106,28 @@ export default function NavBar() {
           </ListItem>
         ))}
 
-        {user.isAdmin && (
-          <>
-            <ListItem disablePadding>
-              <ListItemButton component={Link} to="/fields" sx={{ color: "#fff" }}>
-                <SportsSoccerIcon />
-                <ListItemText primary="Terrains" sx={{ ml: 1 }} />
-              </ListItemButton>
-            </ListItem>
+        {/* ✅ Ce bouton "Terrains" est TOUJOURS affiché pour tous (admin + client) */}
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/fields" sx={{ color: "#fff" }}>
+            <SportsSoccerIcon />
+            <ListItemText primary="Terrains" sx={{ ml: 1 }} />
+          </ListItemButton>
+        </ListItem>
 
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate("/admin/reservations")} sx={{ color: "#fff" }}>
-                <Badge badgeContent={pendingCount} color="error">
-                  <NotificationsIcon />
-                </Badge>
-                <ListItemText primary="Réservations" sx={{ ml: 1 }} />
-              </ListItemButton>
-            </ListItem>
-          </>
+        {/* ✅ Ce bouton est réservé pour ADMIN SEULEMENT */}
+        {user.isAdmin && (
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate("/admin/reservations")} sx={{ color: "#fff" }}>
+              <Badge badgeContent={pendingCount} color="error">
+                <NotificationsIcon />
+              </Badge>
+              <ListItemText primary="Réservations" sx={{ ml: 1 }} />
+            </ListItemButton>
+          </ListItem>
         )}
       </List>
 
-      {/* Avatar / Menu utilisateur */}
+
       <Box>
         <Avatar
           src={user.picture}

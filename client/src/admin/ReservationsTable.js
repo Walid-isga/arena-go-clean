@@ -38,19 +38,32 @@ export default function ReservationsTable() {
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
+      const token = localStorage.getItem("token");
+
       const endpoint =
         newStatus === "Confirmed"
           ? `http://localhost:8000/booking/confirm/${id}`
           : `http://localhost:8000/booking/reject/${id}`;
 
-      await axios.patch(endpoint, {}, { withCredentials: true });
+      await axios.patch(endpoint, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       toast.success(`Réservation ${newStatus.toLowerCase()} !`);
-      fetchReservations(); // Recharge la liste
+      fetchReservations();
     } catch (err) {
       console.error("Erreur mise à jour :", err.response?.data || err.message);
       toast.error("Erreur lors de la mise à jour.");
     }
+  };
+
+  // Format heures : "10:30" → "10h30"
+  const formatTime = (time) => {
+    if (!time) return "-";
+    const [h, m] = time.split(":");
+    return `${h}h${m}`;
   };
 
   return (
@@ -80,8 +93,8 @@ export default function ReservationsTable() {
                 <TableRow key={index}>
                   <TableCell>{row.teamName}</TableCell>
                   <TableCell>{row.date?.split("T")[0]}</TableCell>
-                  <TableCell>{row.starttime?.split("T")[1]}</TableCell>
-                  <TableCell>{row.endtime?.split("T")[1]}</TableCell>
+                  <TableCell>{formatTime(row.starttime)}</TableCell>
+                  <TableCell>{formatTime(row.endtime)}</TableCell>
                   <TableCell>{row.players}</TableCell>
                   <TableCell>{row.status}</TableCell>
                   <TableCell>

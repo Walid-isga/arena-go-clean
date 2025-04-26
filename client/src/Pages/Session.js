@@ -3,20 +3,26 @@ import axios from "axios";
 import {
   Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, Paper, IconButton, Menu, MenuItem,
-  Typography, Container, Button, Box
+  Typography, Container, Button
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import jsPDF from "jspdf";
+import { useAuth } from "../hooks/useAuth"; // ✅ nouveau
 
 function Session() {
+  const { user } = useAuth(); // ✅ récupération du user via contexte
   const [anchorEl, setAnchorEl] = useState(null);
   const [rows, setRows] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(null);
   const open = Boolean(anchorEl);
 
+  const token = localStorage.getItem("token"); // ✅ pour l'Authorization
+
   const fetchFieldDetails = async (fieldId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/fields/${fieldId}`);
+      const response = await axios.get(`http://localhost:8000/fields/${fieldId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching field details:", error);
@@ -25,10 +31,12 @@ function Session() {
   };
 
   const load = async () => {
+    if (!user || !user._id) return;
+
     try {
-      const r = await axios.get(`http://localhost:8000/auth/login/success`, { withCredentials: true });
-      const userId = r.data.user._id;
-      const response = await axios.get(`http://localhost:8000/booking/user/${userId}`);
+      const response = await axios.get(`http://localhost:8000/booking/user/${user._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const enriched = await Promise.all(response.data.map(async (booking) => {
         const field = await fetchFieldDetails(booking.field);
@@ -51,7 +59,7 @@ function Session() {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [user]);
 
   const handleClick = (event, index) => {
     setAnchorEl(event.currentTarget);
@@ -66,7 +74,9 @@ function Session() {
   const handleDelete = async () => {
     const bookingId = rows[currentIndex].id;
     try {
-      await axios.delete(`http://localhost:8000/booking/${bookingId}`);
+      await axios.delete(`http://localhost:8000/booking/${bookingId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const updated = rows.filter((_, i) => i !== currentIndex);
       setRows(updated);
       handleClose();
@@ -78,7 +88,13 @@ function Session() {
   const handleConfirm = async () => {
     const bookingId = rows[currentIndex].id;
     try {
-      await axios.patch(`http://localhost:8000/booking/${bookingId}`, { status: "Confirmed" });
+      await axios.patch(
+        `http://localhost:8000/booking/${bookingId}`,
+        { status: "Confirmed" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const updatedRows = rows.map((row, i) =>
         i === currentIndex ? { ...row, status: "Confirmed" } : row
       );
@@ -91,51 +107,53 @@ function Session() {
 
   const handleDownload = async (bookingId) => {
     try {
-      const booking = await axios.get(`http://localhost:8000/booking/${bookingId}`);
-      const field = await axios.get(`http://localhost:8000/fields/${booking.data.field}`);
-      const user = await axios.get(`http://localhost:8000/users/${booking.data.user}`);
-  
+      const booking = await axios.get(`http://localhost:8000/booking/${bookingId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const field = await axios.get(`http://localhost:8000/fields/${booking.data.field}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userRes = await axios.get(`http://localhost:8000/users/${booking.data.user}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       const doc = new jsPDF();
-  
-      // Titre
+
       doc.setFont("Helvetica", "bold");
       doc.setFontSize(16);
       doc.setTextColor(40, 40, 40);
       doc.text("Sportify - Confirmation de Réservation", 20, 20);
       doc.setDrawColor(0);
       doc.line(20, 25, 190, 25);
-  
-      // Infos
+
       doc.setFont("Helvetica", "normal");
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
       doc.text(`Réservation ID : ${bookingId}`, 20, 40);
-      doc.text(`Utilisateur : ${user.data.username}`, 20, 50);
-      doc.text(`Email : ${user.data.email}`, 20, 60);
+      doc.text(`Utilisateur : ${userRes.data.username}`, 20, 50);
+      doc.text(`Email : ${userRes.data.email}`, 20, 60);
       doc.text(`Terrain : ${field.data.name}`, 20, 70);
       doc.text(`Sport : ${field.data.sport}`, 20, 80);
       doc.text(`Date : ${booking.data.date.split("T")[0]}`, 20, 90);
-  
-      // Formatage heure
+
       const formatTime = (time) =>
-        new Date(time).toLocaleTimeString("fr-FR", {
+        new Date(`1970-01-01T${time}`).toLocaleTimeString("fr-FR", {
           hour: "2-digit",
           minute: "2-digit",
         });
-  
+
       doc.text(
         `Heure : de ${formatTime(booking.data.starttime)} à ${formatTime(booking.data.endtime)}`,
         20,
         100
       );
-  
+
       doc.text(`Statut : Confirmé`, 20, 110);
-  
-      // Footer
+
       doc.setFontSize(10);
       doc.setTextColor(100);
       doc.text("Merci d’avoir utilisé Sportify !", 20, 130);
-  
+
       doc.save("sportify-confirmation.pdf");
     } catch (err) {
       console.error("Erreur téléchargement PDF :", err);
@@ -143,85 +161,79 @@ function Session() {
   };
 
   return (
-    <>
-      <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3, color: "#fff" }}>
-          📋 Mes Réservations
-        </Typography>
+    <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }}>
+      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3, color: "#fff" }}>
+        📋 Mes Réservations
+      </Typography>
 
-        <Paper
-          elevation={4}
-          sx={{
-            borderRadius: 3,
-            overflow: "hidden",
-            backgroundColor: "#1e1e1e",
-            color: "#fff",
-          }}
-        >
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: "#2c2c2c" }}>
-                  <TableCell sx={{ color: "#fff" }}>Action</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>ID</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>Date</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>Début</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>Fin</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>Terrain</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>Statut</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>PDF</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ "&:hover": { backgroundColor: "#2a2a2a" } }}
-                  >
-                    <TableCell>
-                      <IconButton onClick={(e) => handleClick(e, index)} sx={{ color: "#fff" }}>
-                        <MoreHorizIcon />
-                      </IconButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{ style: { backgroundColor: "#333", color: "#fff" } }}
+      <Paper
+        elevation={4}
+        sx={{
+          borderRadius: 3,
+          overflow: "hidden",
+          backgroundColor: "#1e1e1e",
+          color: "#fff",
+        }}
+      >
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#2c2c2c" }}>
+                <TableCell sx={{ color: "#fff" }}>Action</TableCell>
+                <TableCell sx={{ color: "#fff" }}>ID</TableCell>
+                <TableCell sx={{ color: "#fff" }}>Date</TableCell>
+                <TableCell sx={{ color: "#fff" }}>Début</TableCell>
+                <TableCell sx={{ color: "#fff" }}>Fin</TableCell>
+                <TableCell sx={{ color: "#fff" }}>Terrain</TableCell>
+                <TableCell sx={{ color: "#fff" }}>Statut</TableCell>
+                <TableCell sx={{ color: "#fff" }}>PDF</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row, index) => (
+                <TableRow key={index} sx={{ "&:hover": { backgroundColor: "#2a2a2a" } }}>
+                  <TableCell>
+                    <IconButton onClick={(e) => handleClick(e, index)} sx={{ color: "#fff" }}>
+                      <MoreHorizIcon />
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      PaperProps={{ style: { backgroundColor: "#333", color: "#fff" } }}
+                    >
+                      <MenuItem onClick={handleDelete}>❌ Annuler</MenuItem>
+                    </Menu>
+                  </TableCell>
+                  <TableCell>{row.id}</TableCell>
+                  <TableCell>{row.date}</TableCell>
+                  <TableCell>{row.startTime}</TableCell>
+                  <TableCell>{row.endTime}</TableCell>
+                  <TableCell>{row.field}</TableCell>
+                  <TableCell>{row.status}</TableCell>
+                  <TableCell>
+                    {row.status === "Confirmed" ? (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleDownload(row.id)}
+                        sx={{ color: "#fff", borderColor: "#4caf50" }}
                       >
-                        <MenuItem onClick={handleConfirm}>✅ Confirmer</MenuItem>
-                        <MenuItem onClick={handleDelete}>❌ Annuler</MenuItem>
-                      </Menu>
-                    </TableCell>
-                    <TableCell>{row.id}</TableCell>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.startTime}</TableCell>
-                    <TableCell>{row.endTime}</TableCell>
-                    <TableCell>{row.field}</TableCell>
-                    <TableCell>{row.status}</TableCell>
-                    <TableCell>
-                      {row.status === "Confirmed" ? (
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => handleDownload(row.id)}
-                          sx={{ color: "#fff", borderColor: "#4caf50" }}
-                        >
-                          📄 Télécharger
-                        </Button>
-                      ) : (
-                        <Typography variant="body2" color="gray">
-                          En attente
-                        </Typography>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Container>
-    </>
+                        📄 Télécharger
+                      </Button>
+                    ) : (
+                      <Typography variant="body2" color="gray">
+                        En attente
+                      </Typography>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Container>
   );
 }
 

@@ -1,11 +1,11 @@
+
 import Booking from "../models/booking.js";
 import mongoose from "mongoose";
 import { sendBookingConfirmation, sendBookingRefusal } from "../utils/sendEmail.js";
 import User from "../models/user.js";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale"; // ✅ Correct
+import { fr } from "date-fns/locale";
 import Field from "../models/field.js";
-import { isBefore, isAfter } from 'date-fns';
 
 export const getBooking = async (req, res) => {
   try {
@@ -27,20 +27,33 @@ export const getBookings = async (req, res) => {
 
 export const createBooking = async (req, res) => {
   const { field, user, date, starttime, endtime, status, teamName, players } = req.body;
+  console.log("➕ Tentative de réservation avec les données :");
+console.log({ field, user, date, starttime, endtime, status, teamName, players });
+
 
   try {
     const overlappingBooking = await Booking.findOne({
-      field: field,
-      date: new Date(date),
+      field,
+      date: { $eq: date },
+      status: "Confirmed",
       $or: [
-        { starttime: { $lte: starttime }, endtime: { $gte: starttime } },
-        { starttime: { $lte: endtime }, endtime: { $gte: endtime } },
-        { starttime: { $gte: starttime }, endtime: { $lte: endtime } },
-      ],
+        {
+          $and: [
+            { starttime: { $lt: endtime } },
+            { endtime: { $gt: starttime } },
+          ]
+        }
+      ]
     });
 
     if (overlappingBooking) {
-      return res.status(400).json({ message: "Booking time conflicts with an existing booking." });
+      return res.status(409).json({
+        message: "Le terrain est déjà réservé pour ce créneau horaire.",
+        field: overlappingBooking.field,
+        date: overlappingBooking.date,
+        start: overlappingBooking.starttime,
+        end: overlappingBooking.endtime,
+      });
     }
 
     const booking = new Booking({ field, user, date, starttime, endtime, status, teamName, players });
@@ -56,12 +69,11 @@ export const confirmBooking = async (req, res) => {
   try {
     const booking = await Booking.findByIdAndUpdate(req.params.id, { status: 'Confirmed' }, { new: true });
     const user = await User.findById(booking.user);
-    const field = await Field.findById(booking.field); // récupère le nom du terrain
+    const field = await Field.findById(booking.field);
 
-    // ➕ Formatage
     const formattedDate = format(new Date(booking.date), "dd MMMM yyyy", { locale: fr });
-    const formattedStart = format(new Date(booking.starttime), "HH:mm");
-    const formattedEnd = format(new Date(booking.endtime), "HH:mm");
+    const formattedStart = format(new Date(`2000-01-01T${booking.starttime}`), "HH:mm");
+    const formattedEnd = format(new Date(`2000-01-01T${booking.endtime}`), "HH:mm");    
 
     await sendBookingConfirmation({
       to: user.email,
@@ -69,7 +81,7 @@ export const confirmBooking = async (req, res) => {
       date: formattedDate,
       starttime: formattedStart,
       endtime: formattedEnd,
-      field: field.name, // on envoie le nom au lieu de l’ID
+      field: field.name,
     });
 
     res.json({ message: "Réservation confirmée et email envoyé." });
@@ -78,7 +90,6 @@ export const confirmBooking = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const rejectBooking = async (req, res) => {
   try {
@@ -91,10 +102,10 @@ export const rejectBooking = async (req, res) => {
     const user = await User.findById(booking.user);
     const field = await Field.findById(booking.field);
 
-    // ➕ Formatage
     const formattedDate = format(new Date(booking.date), "dd MMMM yyyy", { locale: fr });
-    const formattedStart = format(new Date(booking.starttime), "HH:mm");
-    const formattedEnd = format(new Date(booking.endtime), "HH:mm");
+    const formattedStart = format(new Date(`2000-01-01T${booking.starttime}`), "HH:mm");
+    const formattedEnd = format(new Date(`2000-01-01T${booking.endtime}`), "HH:mm");
+    
 
     await sendBookingRefusal({
       to: user.email,
@@ -111,7 +122,6 @@ export const rejectBooking = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const updateBooking = async (req, res) => {
   try {
@@ -136,30 +146,35 @@ export const deleteBooking = async (req, res) => {
 
 export const getBookingsByUser = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.params.id })
-      .populate("field"); // pour avoir le nom + sport du terrain
-
+    const bookings = await Booking.find({ user: req.params.id }).populate("field");
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
-
-
 export const getBookingsByField = async (req, res) => {
-    try {
-      const bookings = await Booking.find({
-        field: req.params.id,
-        status: "Confirmed", // ✅ filtre uniquement les confirmées
-      });
-      res.json(bookings);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  try {
+    const { start, end } = req.query;
+    const { id } = req.params;
+
+    const query = {
+      field: id,
+      status: "Confirmed",
+    };
+
+    // Si start et end existent, on filtre sur la date
+    if (start && end) {
+      query.date = { $gte: start, $lte: end };
     }
-  };
-  
+
+    const bookings = await Booking.find(query);
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 export const getPendingBookings = async (req, res) => {
   try {
@@ -206,18 +221,28 @@ export const getUpcomingAndPastBookings = async (req, res) => {
     const upcoming = await Booking.find({
       user: userId,
       status: "Confirmed",
-      date: { $gte: now }
+      $expr: {
+        $gte: [
+          { $dateFromString: { dateString: { $concat: ["$date", "T", "$starttime"] } } },
+          now
+        ]
+      }
     }).sort({ date: 1 });
 
     const past = await Booking.find({
       user: userId,
       status: "Confirmed",
-      date: { $lt: now }
+      $expr: {
+        $lt: [
+          { $dateFromString: { dateString: { $concat: ["$date", "T", "$endtime"] } } },
+          now
+        ]
+      }
     }).sort({ date: -1 });
 
     res.json({ upcoming, past });
   } catch (error) {
+    console.error("❌ Erreur getUpcomingAndPastBookings :", error);
     res.status(500).json({ message: error.message });
   }
 };
-

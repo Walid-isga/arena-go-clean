@@ -13,6 +13,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "./hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function Login() {
 
         if (data?.user) {
           toast.success("✅ Connexion réussie !");
-          setTimeout(() => navigate("/fields"), 1500);
+          setTimeout(() => navigate("/home"), 1500);
         }
       } catch (err) {
         toast.error("❌ Erreur lors de la connexion.");

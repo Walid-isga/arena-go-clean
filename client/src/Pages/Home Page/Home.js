@@ -4,10 +4,8 @@ import SlideShow from "../../Components/Home Components/Slide Show/SlideShow";
 import PlayerStatistics from "../../Components/Home Components/Statistics/PlayerStatistics";
 import UpcomingGames from "../../Components/Home Components/Upcoming Games/UpcomingGames";
 import LatestGames from "../../Components/Home Components/Latest Games/LatestGames";
-import axios from "axios";
 
 import {
-  Box,
   Container,
   Grid,
   Typography,
@@ -17,48 +15,51 @@ import {
 } from "@mui/material";
 
 export default function Home() {
-  const [googleInfo, setGoogleInfo] = useState({});
-  const [user, setUser] = useState({});
-  const [name, setName] = useState("");
-  const [id, setID] = useState("");
+  const [user, setUser] = useState(null);
   const [upcomingMatches, setUpcomingMatches] = useState([]);
   const [pastMatches, setPastMatches] = useState([]);
 
+  // Charger l'utilisateur connecté depuis le backend
   useEffect(() => {
-    const getUser = async () => {
+    const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/auth/login/success", {
-          withCredentials: true,
-        });
-        const userData = response.data.user;
-        const googleData = response.data.googleinfo;
+        const token = localStorage.getItem("token"); // 🔐 récupère le token JWT
 
-        setUser(userData);
-        setGoogleInfo(googleData);
-        setName(userData.username);
-        setID(userData._id);
-      } catch (err) {
-        console.error("Erreur lors de la récupération du user :", err);
+        const res = await fetch("http://localhost:8000/users/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Non autorisé");
+        const data = await res.json();
+
+        setUser(data);
+
+        // 🔁 Ensuite, charger les matchs
+        fetchUserMatches(data._id);
+      } catch (error) {
+        console.error("Erreur utilisateur :", error);
+        window.location.href = "/login"; // redirige si pas connecté
       }
     };
 
-    getUser();
+    fetchUser();
   }, []);
 
-  useEffect(() => {
-    const fetchUserMatches = async () => {
-      if (!id) return;
-      try {
-        const { data } = await axios.get(`http://localhost:8000/booking/user-matches/${id}`);
-        setUpcomingMatches(data.upcoming);
-        setPastMatches(data.past);
-      } catch (error) {
-        console.error("Erreur récupération des matchs :", error);
-      }
-    };
+  // Charger les matchs depuis l'API
+  const fetchUserMatches = async (userId) => {
+    try {
+      const res = await fetch(`http://localhost:8000/booking/user-matches/${userId}`);
+      const data = await res.json();
+      setUpcomingMatches(data.upcoming);
+      setPastMatches(data.past);
+    } catch (error) {
+      console.error("Erreur récupération des matchs :", error);
+    }
+  };
 
-    fetchUserMatches();
-  }, [id]);
+  if (!user) return <p>Chargement...</p>;
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -67,9 +68,9 @@ export default function Home() {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Bienvenue {name.toUpperCase()}
+                Bienvenue {user.username?.toUpperCase() || "Utilisateur"}
               </Typography>
-              <ProfileInformation userInfo1={googleInfo} userInfo2={user} />
+              <ProfileInformation user={user} />
             </CardContent>
           </Card>
         </Grid>

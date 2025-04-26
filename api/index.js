@@ -4,18 +4,26 @@ import mongoose from "mongoose";
 import cors from "cors";
 import passport from "passport";
 import cookieSession from "cookie-session";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import authrouter from "./routes/auth.js";
 import usersrouter from "./routes/users.js";
 import fieldsrouter from "./routes/fields.js";
 import bookingrouter from "./routes/booking.js";
 import statsRoutes from "./routes/stats.js";
-import passportSetup from "./passport.js";
+import userRoutes from "./routes/user.js";
+import chatbotRoutes from './routes/chatbotRoutes.js';
+import adminRoutes from "./routes/admin.js";
 
 const app = express();
 dotenv.config();
 const PORT = 8000;
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ MongoDB connection
 const connect = async () => {
   try {
     await mongoose.connect(process.env.MONGO_DB);
@@ -25,13 +33,17 @@ const connect = async () => {
   }
 };
 
+// ✅ Middleware pour rendre 'uploads' public
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use("/api/chatbot", chatbotRoutes);
 app.use(
   cookieSession({
     name: "session",
     keys: ["cyberwolve"],
     maxAge: 24 * 60 * 60 * 1000,
-    secure: false,
     sameSite: "lax",
+    secure: false,
   })
 );
 
@@ -47,11 +59,14 @@ app.use(
 
 app.use(express.json());
 
+app.use("/users", userRoutes);
 app.use("/auth", authrouter);
 app.use("/users", usersrouter);
 app.use("/fields", fieldsrouter);
 app.use("/booking", bookingrouter);
 app.use("/api/stats", statsRoutes);
+app.use("/admin", adminRoutes);
+
 
 app.listen(PORT, () => {
   connect();

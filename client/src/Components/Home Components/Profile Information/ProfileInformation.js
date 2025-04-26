@@ -1,13 +1,19 @@
 import React from "react";
-import { Card, CardContent, Typography, Avatar, Grid, Divider } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Avatar,
+  Grid,
+  Divider,
+} from "@mui/material";
 import profileGif from "../Assets/user-profile.gif";
 import defaultProfile from "../Assets/profile.gif";
 
-export default function ProfileInformation({ userInfo1, userInfo2 }) {
-  if (!userInfo1 || !userInfo2) return <p>Chargement du profil...</p>;
+export default function ProfileInformation({ user }) {
+  if (!user) return <p>Chargement du profil...</p>;
 
-  const { familyName, givenName } = userInfo1;
-  const { picture, isAdmin } = userInfo2;
+  const { username, email, picture, city, phone, isAdmin } = user;
   const isAdminText = isAdmin ? "Oui" : "Non";
 
   return (
@@ -21,9 +27,10 @@ export default function ProfileInformation({ userInfo1, userInfo2 }) {
             />
           </Grid>
           <Grid item xs>
-            <Typography variant="h6">Informations du profil</Typography>
+            <Typography variant="h6" gutterBottom>
+            </Typography>
             <Divider sx={{ my: 1 }} />
-            <Typography><strong>Admin :</strong> {isAdminText}</Typography>
+            <Typography><strong>Nom :</strong> {username}</Typography>
           </Grid>
         </Grid>
       </CardContent>

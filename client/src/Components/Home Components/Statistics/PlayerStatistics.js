@@ -19,22 +19,23 @@ export default function PlayerStatistics({ userInfo }) {
       try {
         const res = await axios.get(`http://localhost:8000/booking/user/${userInfo._id}`);
         const confirmed = res.data.filter(b => b.status === "Confirmed");
-
-        const foot = confirmed.filter(b => b.field?.sport === "Soccer").length;
+  
+        const foot = confirmed.filter(b => b.field?.sport === "Football").length;
         const basket = confirmed.filter(b => b.field?.sport === "Basketball").length;
         const tennis = confirmed.filter(b => b.field?.sport === "Tennis").length;
         const rugby = confirmed.filter(b => b.field?.sport === "Rugby").length;
-
+  
         setStats({ foot, basket, tennis, rugby });
       } catch (err) {
         console.error("Erreur stats joueur :", err);
       }
     };
-
+  
     if (userInfo._id) {
       fetchStats();
     }
   }, [userInfo]);
+  
 
   return (
     <Card elevation={4}>

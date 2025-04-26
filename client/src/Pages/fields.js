@@ -1,164 +1,177 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Grid,
-  Button,
   Container,
-  TextField,
-  MenuItem,
-  Fab,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Box,
+  Typography,
+  Button,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import AddFieldModel from "../Components/AddFieldModel";
+import AdminNavbar from "../admin/AdminNavbar"; // ✅ Import AdminNavbar
 
-function Fields() {
+export default function Fields() {
   const [fields, setFields] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [filteredFields, setFilteredFields] = useState([]);
-  const [search, setSearch] = useState("");
-  const [sportFilter, setSportFilter] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const getFields = async () => {
+  const fetchFields = async () => {
     try {
       const { data } = await axios.get("http://localhost:8000/fields");
       setFields(data);
-      setFilteredFields(data);
     } catch (err) {
-      console.error(err);
+      console.error("Erreur de chargement des terrains :", err);
+    }
+  };
+
+  const deleteField = async (id) => {
+    if (!window.confirm("Voulez-vous vraiment supprimer ce terrain ?")) return;
+    try {
+      await axios.delete(`http://localhost:8000/fields/${id}`);
+      fetchFields();
+    } catch (error) {
+      console.error("Erreur de suppression :", error);
     }
   };
 
   useEffect(() => {
-    getFields();
+    fetchFields();
   }, []);
 
-  const uniqueSports = [...new Set(fields.map((f) => f.sport))];
-
-  const filterFields = () => {
-    const filtered = fields.filter((field) => {
-      const matchSport = sportFilter === "" || field.sport === sportFilter;
-      const matchSearch = field.name.toLowerCase().includes(search.toLowerCase());
-      return matchSport && matchSearch;
-    });
-    setFilteredFields(filtered);
-  };
-
-  useEffect(() => {
-    filterFields();
-  }, [search, sportFilter]);
-
   return (
-    <Container sx={{ py: 5 }}>
-      <Typography variant="h4" gutterBottom sx={{ color: "#fff", fontWeight: "bold" }}>
-        🏟️ Liste des Terrains
-      </Typography>
+    <>
+      {/* ✅ Si admin, afficher AdminNavbar */}
+      {user?.isAdmin && <AdminNavbar />}
 
-      {/* Filtrage */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 4 }}>
-        <TextField
-          label="🔍 Rechercher par nom"
-          variant="filled"
-          fullWidth
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          sx={{
-            backgroundColor: "#2a2a2a",
-            input: { color: "#fff" },
-            label: { color: "#aaa" },
-            flex: 1,
-            borderRadius: 1,
-          }}
-        />
-        <TextField
-          select
-          label="Filtrer par sport"
-          value={sportFilter}
-          onChange={(e) => setSportFilter(e.target.value)}
-          variant="filled"
-          sx={{
-            minWidth: 200,
-            backgroundColor: "#2a2a2a",
-            input: { color: "#fff" },
-            label: { color: "#aaa" },
-            borderRadius: 1,
-          }}
-        >
-          <MenuItem value="">Tous les sports</MenuItem>
-          {uniqueSports.map((sport, index) => (
-            <MenuItem key={index} value={sport}>
-              {sport}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
+      <Container sx={{ py: 5 }}>
+        <Typography variant="h4" gutterBottom sx={{ color: "#fff", fontWeight: "bold" }}>
+          🏟️ Nos Terrains Disponibles
+        </Typography>
 
-      {/* Grille des terrains */}
-      <Grid container spacing={3}>
-        {filteredFields.map((field, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                backgroundColor: "#1e1e1e",
-                color: "#fff",
-                borderRadius: 2,
-                boxShadow: "0 0 10px rgba(0,0,0,0.4)",
-              }}
+        {/* ➕ Bouton Ajouter un terrain (admin seulement) */}
+        {user?.isAdmin && (
+          <Box sx={{ textAlign: "right", mb: 2 }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => navigate("/admin/add-field")}
             >
-              <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ color: "#4FC3F7" }}>
-                  {field.name}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>🏅 Sport :</strong> {field.sport}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>🟫 Surface :</strong> {field.surfaceType}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>📍 Ville :</strong> {field.location.city}
-                </Typography>
-                {field.description && (
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    {field.description}
+              ➕ Ajouter un Terrain
+            </Button>
+          </Box>
+        )}
+
+        <Grid container spacing={3}>
+          {fields.map((field) => (
+            <Grid item xs={12} sm={6} md={4} key={field._id}>
+              <Card
+                sx={{
+                  backgroundColor: "#1e1e1e",
+                  color: "#fff",
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  position: "relative",
+                  "&:hover .overlay": {
+                    opacity: 1,
+                    transform: "rotateY(0deg)",
+                  },
+                }}
+              >
+{field.photos?.length > 0 && (
+  <CardMedia
+    component="img"
+    height="200"
+    image={`http://localhost:8000/${field.photos[0]}`}
+    alt={field.name}
+    sx={{
+      transition: "transform 0.8s",
+      transform: "rotateY(0deg)",
+      "&:hover": {
+        transform: "rotateY(180deg)",
+      },
+    }}
+  />
+)}
+
+
+                {/* Overlay boutons */}
+                <Box
+                  className="overlay"
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    bgcolor: "rgba(0, 0, 0, 0.6)",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    opacity: 0,
+                    transition: "all 0.5s ease",
+                    transform: "rotateY(90deg)",
+                  }}
+                >
+                  {user?.isAdmin ? (
+                    <>
+                      <Button
+                        size="small"
+                        color="primary"
+                        variant="contained"
+                        onClick={() => navigate(`/admin/edit-field/${field._id}`)}
+                        sx={{ mb: 1 }}
+                      >
+                        ✏️ Modifier
+                      </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        variant="contained"
+                        onClick={() => deleteField(field._id)}
+                      >
+                        🗑️ Supprimer
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        size="small"
+                        color="primary"
+                        variant="contained"
+                        onClick={() => navigate(`/field/${field._id}`)}
+                        sx={{ mb: 1 }}
+                      >
+                        🔍 Détails
+                      </Button>
+                      <Button
+                        size="small"
+                        color="success"
+                        variant="contained"
+                        onClick={() => navigate("/booking")}
+                      >
+                        🏟️ Réserver
+                      </Button>
+                    </>
+                  )}
+                </Box>
+
+                {/* Informations */}
+                <CardContent>
+                  <Typography variant="h6">{field.name}</Typography>
+                  <Typography variant="body2" color="gray">
+                    {field.location?.city || "Ville inconnue"}
                   </Typography>
-                )}
-              </CardContent>
-              <CardActions sx={{ justifyContent: "flex-end", px: 2, pb: 2 }}>
-                <Button variant="contained" size="small" sx={{ backgroundColor: "#4CAF50" }}>
-                  Réserver
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Bouton flottant pour ajouter un terrain */}
-      <Box onClick={() => setOpen(true)} sx={{ position: "fixed", bottom: 30, right: 30 }}>
-        <Fab color="primary" aria-label="add">
-          <AddIcon />
-        </Fab>
-      </Box>
-
-      {/* Modal pour ajout */}
-      <AddFieldModel
-        open={open}
-        handleClose={() => setOpen(false)}
-        handleSuccess={() => {
-          getFields();
-          setOpen(false);
-        }}
-      />
-    </Container>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </>
   );
 }
-
-export default Fields;

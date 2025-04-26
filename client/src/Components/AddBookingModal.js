@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -8,13 +7,14 @@ import {
   Typography,
   Grid,
 } from "@mui/material";
-import axios from "axios";
 import { TimeField } from "@mui/x-date-pickers/TimeField";
 import { DateField } from "@mui/x-date-pickers/DateField";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FilterFields from "../Components/FilterFields";
+import { useAuth } from "../hooks/useAuth";
 import { toast } from "react-toastify";
+import axios from "axios";
 import dayjs from "dayjs";
 
 const style = {
@@ -38,10 +38,9 @@ export default function AddBookingModal({
   handleSubmit,
   selectedInfo,
 }) {
+  const { user } = useAuth();
   const [field, setField] = useState("");
   const [fields, setFields] = useState([]);
-  const [user, setUser] = useState();
-  const [status, setStatus] = useState();
   const [date, setDate] = useState();
   const [starttime, setStarttime] = useState();
   const [endtime, setEndtime] = useState();
@@ -63,10 +62,8 @@ export default function AddBookingModal({
   };
 
   const resetData = () => {
-    setUser();
     setEndtime();
     setStarttime();
-    setStatus();
     setDate();
     setPlayers(0);
     setTeamName("");
@@ -92,30 +89,40 @@ export default function AddBookingModal({
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const userrequest = await axios.get("http://localhost:8000/auth/login/success", {
-        withCredentials: true,
-      });
-      const userId = userrequest.data.user._id;
 
+    if (!user || !user._id) {
+      toast.error("❌ Utilisateur non connecté !");
+      return;
+    }
+
+    try {
       const body = {
-        user: userId,
+        user: user._id,
         field,
         status: "Pending",
-        date: date.toISOString().split("T")[0],
-        starttime: date.toISOString().split("T")[0] + "T" + starttime.toISOString().split("T")[1],
-        endtime: date.toISOString().split("T")[0] + "T" + endtime.toISOString().split("T")[1],
+        date: date.format("YYYY-MM-DD"),
+        starttime: starttime.format("HH:mm"),
+        endtime: endtime.format("HH:mm"),
         teamName,
         players,
       };
 
-      await axios.post("http://localhost:8000/booking", body);
+      await axios.post("http://localhost:8000/booking", body, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
       toast.success("✅ Réservation confirmée !");
       handleSuccess();
       handleClose();
     } catch (error) {
       console.error(error);
-      toast.error("❌ Erreur lors de la réservation !");
+      if (error.response?.status === 409) {
+        toast.error("❌ Ce terrain est déjà réservé à cette date/heure !");
+      } else {
+        toast.error("❌ Erreur lors de la réservation !");
+      }
       handleError(error);
     }
   };
@@ -128,7 +135,24 @@ export default function AddBookingModal({
         </Typography>
 
         <Box sx={{ mb: 2 }}>
-          <FilterFields uniqueField={fields} onFilter={handleFilter} />
+        {field ? (
+  <TextField
+    fullWidth
+    label="Terrain sélectionné"
+    variant="filled"
+    value={fields.find(f => f._id === field)?.name || "Terrain"}
+    disabled
+    sx={{
+      backgroundColor: "#2a2a2a",
+      borderRadius: 1,
+      input: { color: "#fff" },
+      label: { color: "#ccc" },
+    }}
+  />
+) : (
+  <FilterFields uniqueField={fields} onFilter={handleFilter} />
+)}
+
         </Box>
 
         <Grid container spacing={2}>

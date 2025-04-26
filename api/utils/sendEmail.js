@@ -59,3 +59,20 @@ export const sendBookingRefusal = async ({ to, teamName, date, starttime, endtim
 
   console.log("📧 E-mail de refus envoyé : %s", info.messageId);
 };
+
+export const sendWelcomeEmail = async ({ to, username }) => {
+  const info = await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: "🎉 Bienvenue sur Sportify !",
+    html: `
+      <h2>Bienvenue ${username} 👋</h2>
+      <p>Ton compte a bien été vérifié.</p>
+      <p>Tu peux maintenant réserver un terrain !</p>
+      <a href="http://localhost:3000/home" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Réserver maintenant</a>
+      <p>— L’équipe Sportify</p>
+    `,
+  });
+
+  console.log("📧 E-mail de bienvenue envoyé à :", to);
+};

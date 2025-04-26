@@ -1,31 +1,35 @@
 import User from "../models/user.js";
 
-export const getUser =  async (req, res) => {
-    try {
-        const foundUser = await User.findById(req.params.id);
-        console.log("hahaha")
-        res.status(200).json(foundUser);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-}
+// 🔹 Obtenir tous les utilisateurs
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("Erreur getAllUsers:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
 
-export const getAllUsers = async (req,res,next) =>{
-    console.log("Hi I am a getall route")
-    try{
-        const Users = await User.find()
-        res.status(200).json(Users)
-    }catch{
-        res.status(500).json(err)
-    }
-}
+// 🔹 Obtenir un utilisateur par ID
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "Utilisateur introuvable." });
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Erreur getUser:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
 
-export const updateUser = async (req,res) =>{
-    console.log("Hi I am a update route")
-    try{
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, {$set: req.body}, {new: true})
-        res.status(200).json(updatedUser)
-    }catch{
-        res.status(500).json(err)
-    }
-}
+// 🔹 Mettre à jour un utilisateur (sans image uploadée)
+export const updateUser = async (req, res) => {
+  try {
+    const updated = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json({ message: "Utilisateur mis à jour", user: updated });
+  } catch (err) {
+    console.error("Erreur updateUser:", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};

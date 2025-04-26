@@ -1,33 +1,18 @@
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
-import axios from "axios";
 import pastGif from "../Assets/past.gif";
 import lazyIcon from "../Assets/lazy.gif";
 import GameInformation from "../Game Information/GameInformation";
 
-export default function LatestGames({ userID }) {
-  const [filteredData, setFilteredData] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get(`http://localhost:8000/booking/user/${userID}`);
-
-        const now = new Date();
-
-        const pastGames = data.filter(game => {
-          const endTime = new Date(game.endtime);
-          return game.status === "Confirmed" && endTime < now;
-        });
-
-        setFilteredData(pastGames);
-      } catch (error) {
-        console.error("Erreur récupération des derniers matchs :", error);
-      }
-    };
-
-    fetchData();
-  }, [userID]);
+export default function LatestGames({ matches }) {
+  const filteredData = matches.filter(game => {
+    if (!game.date || !game.endtime) return false;
+    const dateStr = new Date(game.date).toISOString().split("T")[0];
+    const fullEndDate = new Date(`${dateStr}T${game.endtime}`);
+    return game.status === "Confirmed" && fullEndDate < new Date();
+  });
+  
 
   return (
     <Card sx={{ backgroundColor: "#1e1e1e", color: "#fff" }}>
