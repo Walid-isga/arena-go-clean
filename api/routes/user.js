@@ -1,10 +1,18 @@
+// routes/user.js
 import express from "express";
-import { updateUserController } from "../controllers/user.js";
-import { upload } from "../middleware/upload.js"; // Importation du middleware pour l'upload d'image
+import { upload } from "../middleware/upload.js";
+import { authMiddleware } from "../middleware/auth.js";
+import {
+  updateUserController,
+  getCurrentUser,
+} from "../controllers/user.js";
 
 const router = express.Router();
 
-// Route pour mettre à jour les infos utilisateur (y compris image de profil)
+// ✅ Route protégée : récupérer l'utilisateur connecté
+router.get("/me", authMiddleware, getCurrentUser);
+
+// ✅ Mettre à jour le profil avec image (protégé ou non selon ton choix)
 router.patch("/:id", upload.single("picture"), updateUserController);
 
 export default router;
