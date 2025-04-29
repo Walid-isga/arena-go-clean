@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/elmehdiziate/ArenaGo#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
