@@ -19,7 +19,7 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/contact', formData);
+      await axios.post('/api/contact', formData);
       toast.success("✅ Votre message a été envoyé !");
       setFormData({ name: '', email: '', message: '' });
     } catch (err) {

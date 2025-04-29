@@ -35,7 +35,7 @@ export default function RegisterWithEmail() {
     }
 
     try {
-      const res = await axios.post("http://localhost:8000/auth/register", {
+      const res = await axios.post("/auth/register", {
         email: formData.email,
         password: formData.password,
         username: formData.username,
@@ -51,7 +51,7 @@ export default function RegisterWithEmail() {
 
   const handleVerifyOtp = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/auth/verify-otp", {
+      const res = await axios.post("/auth/verify-otp", {
         email: formData.email,
         otp: formData.otp,
       });
@@ -64,7 +64,7 @@ export default function RegisterWithEmail() {
 
   const handleResendOtp = async () => {
     try {
-      await axios.post("http://localhost:8000/auth/resend-otp", {
+      await axios.post("/auth/resend-otp", {
         email: formData.email,
       });
       toast.success("📧 Nouveau code OTP envoyé !");

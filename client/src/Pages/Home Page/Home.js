@@ -23,7 +23,7 @@ export default function Home() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch("http://localhost:8000/users/me", {
+        const res = await fetch("/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -44,7 +44,7 @@ export default function Home() {
   // Charger les matchs
   const fetchUserMatches = async (userId) => {
     try {
-      const res = await fetch(`http://localhost:8000/booking/user-matches/${userId}`);
+      const res = await fetch(`/booking/user-matches/${userId}`);
       const data = await res.json();
       setUpcomingMatches(data.upcoming);
       setPastMatches(data.past);

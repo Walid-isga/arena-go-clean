@@ -62,7 +62,7 @@ export default function AddField() {
     }
 
     try {
-      await axios.post("http://localhost:8000/fields", formData);
+      await axios.post("/fields", formData);
       toast.success("✅ Terrain ajouté !");
       navigate("/fields");
     } catch (err) {

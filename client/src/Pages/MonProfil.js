@@ -73,7 +73,7 @@ export default function MonProfil() {
         formData.append("picture", form.picture);
       }
 
-      await axios.patch(`http://localhost:8000/users/${user._id}`, formData, {
+      await axios.patch(`/users/${user._id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -108,7 +108,7 @@ export default function MonProfil() {
       return URL.createObjectURL(form.picture);
     }
     if (typeof form.picture === "string" && form.picture.startsWith("/uploads")) {
-      return `http://localhost:8000${form.picture}`;
+      return `${form.picture}`;
     }
     return form.picture;
   };

@@ -11,7 +11,7 @@ export default function GameInformation({ game }) {
   useEffect(() => {
     const fetchField = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/fields/${field}`);
+        const res = await axios.get(`/fields/${field}`);
         setFieldName(res.data.name);
         setSportType(res.data.sport);
       } catch (err) {

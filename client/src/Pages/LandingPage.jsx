@@ -10,7 +10,7 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchFields = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/fields');
+        const res = await axios.get('/fields');
         setFields(res.data);
       } catch (err) {
         console.error("Erreur récupération terrains :", err);
@@ -57,7 +57,7 @@ export default function LandingPage() {
               <div key={field._id} className="event-card">
                 {field.photos && field.photos.length > 0 ? (
                   <img
-                    src={`http://localhost:8000/${field.photos[0]}`}
+                    src={`/${field.photos[0]}`}
                     alt={field.name}
                     className="event-image"
                   />

@@ -39,7 +39,7 @@ export default function Login() {
   }, []);
 
   const handleGoogleLogin = () => {
-    window.open("http://localhost:8000/auth/google", "_self");
+    window.open("/auth/google", "_self");
   };
 
   return (

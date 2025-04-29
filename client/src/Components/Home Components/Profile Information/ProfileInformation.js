@@ -12,7 +12,7 @@ export default function ProfileInformation({ user }) {
   const getPictureUrl = () => {
     if (!picture) return defaultProfile;
     if (typeof picture === "string" && picture.startsWith("/uploads")) {
-      return `http://localhost:8000${picture}`;
+      return `${picture}`;
     }
     return picture; // Sinon c’est déjà une URL complète
   };

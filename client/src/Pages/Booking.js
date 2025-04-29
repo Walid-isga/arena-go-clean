@@ -51,7 +51,7 @@ export default function Booking() {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(`http://localhost:8000/booking/field/${field}`, {
+      const { data } = await axios.get(`/booking/field/${field}`, {
         params: {
           start: dateRange.start,
           end: dateRange.end,

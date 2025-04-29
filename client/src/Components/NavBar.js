@@ -73,7 +73,7 @@ export default function NavBar() {
   const getPictureUrl = () => {
     if (!user || !user.picture) return null;
     if (typeof user.picture === "string" && user.picture.startsWith("/uploads")) {
-      return `http://localhost:8000${user.picture}`;
+      return `${user.picture}`;
     }
     return user.picture;
   };

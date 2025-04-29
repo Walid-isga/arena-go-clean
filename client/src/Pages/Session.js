@@ -31,7 +31,7 @@ export default function Session() {
 
   const fetchFieldDetails = async (fieldId) => {
     try {
-      const response = await axios.get(`http://localhost:8000/fields/${fieldId}`, {
+      const response = await axios.get(`/fields/${fieldId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -44,7 +44,7 @@ export default function Session() {
   const load = async () => {
     if (!user?._id) return;
     try {
-      const { data } = await axios.get(`http://localhost:8000/booking/user/${user._id}`, {
+      const { data } = await axios.get(`/booking/user/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -84,7 +84,7 @@ export default function Session() {
   const handleDelete = async () => {
     const bookingId = rows[currentIndex].id;
     try {
-      await axios.delete(`http://localhost:8000/booking/${bookingId}`, {
+      await axios.delete(`/booking/${bookingId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const updated = rows.filter((_, i) => i !== currentIndex);
@@ -97,13 +97,13 @@ export default function Session() {
 
   const handleDownload = async (bookingId) => {
     try {
-      const booking = await axios.get(`http://localhost:8000/booking/${bookingId}`, {
+      const booking = await axios.get(`/booking/${bookingId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const field = await axios.get(`http://localhost:8000/fields/${booking.data.field}`, {
+      const field = await axios.get(`/fields/${booking.data.field}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const userRes = await axios.get(`http://localhost:8000/users/${booking.data.user}`, {
+      const userRes = await axios.get(`/users/${booking.data.user}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

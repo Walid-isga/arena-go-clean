@@ -23,7 +23,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/auth/login", formData);
+      const res = await axios.post("/auth/login", formData);
       const { token, user } = res.data;
 
       if (!token || !user) {

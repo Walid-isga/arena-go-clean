@@ -31,7 +31,7 @@ export default function Fields() {
   const deleteField = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer ce terrain ?")) return;
     try {
-      await axios.delete(`http://localhost:8000/fields/${id}`);
+      await axios.delete(`/fields/${id}`);
       fetchFields();
     } catch (error) {
       console.error("Erreur de suppression :", error);
@@ -85,7 +85,7 @@ export default function Fields() {
   <CardMedia
     component="img"
     height="200"
-    image={`http://localhost:8000/${field.photos[0]}`}
+    image={`/${field.photos[0]}`}
     alt={field.name}
     sx={{
       transition: "transform 0.8s",

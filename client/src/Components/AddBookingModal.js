@@ -50,7 +50,7 @@ export default function AddBookingModal({
     const fetchFieldInfo = async () => {
       if (selectedInfo?.field) {
         try {
-          const { data } = await axios.get(`http://localhost:8000/fields/${selectedInfo.field}`);
+          const { data } = await axios.get(`/fields/${selectedInfo.field}`);
           setFieldInfo(data);
         } catch (err) {
           console.error(err);
@@ -90,7 +90,7 @@ export default function AddBookingModal({
       return;
     }
     try {
-      await axios.post("http://localhost:8000/booking", {
+      await axios.post("/booking", {
         user: user._id,
         field: selectedInfo.field,
         status: "Pending",

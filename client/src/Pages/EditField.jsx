@@ -24,7 +24,7 @@ export default function EditField() {
   useEffect(() => {
     const fetchField = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:8000/fields/${id}`);
+        const { data } = await axios.get(`/fields/${id}`);
         setForm({
           name: data.name || "",
           sport: data.sport || "",
@@ -48,7 +48,7 @@ export default function EditField() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8000/fields/${id}`, {
+      await axios.put(`/fields/${id}`, {
         name: form.name,
         sport: form.sport,
         surfaceType: form.surfaceType,

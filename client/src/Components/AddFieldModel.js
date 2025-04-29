@@ -43,7 +43,7 @@ export default function AddFieldModal({ open, handleClose, handleSuccess }) {
       });
       if (image) form.append("image", image);
 
-      await axios.post("http://localhost:8000/fields", form, {
+      await axios.post("/fields", form, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });

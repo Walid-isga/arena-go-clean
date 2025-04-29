@@ -11,7 +11,7 @@ export default function FieldDetails() {
   useEffect(() => {
     const fetchField = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:8000/fields/${id}`);
+        const { data } = await axios.get(`/fields/${id}`);
         setField(data);
       } catch (error) {
         console.error("Erreur de chargement du terrain :", error);
@@ -38,7 +38,7 @@ export default function FieldDetails() {
           <CardMedia
             component="img"
             height="250"
-            image={`http://localhost:8000/${field.photos[0]}`}
+            image={`/${field.photos[0]}`}
             alt={field.name}
             sx={{
               objectFit: "cover",

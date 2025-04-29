@@ -35,7 +35,7 @@ function Signup() {
   }, []);
 
   const googleAuth = () => {
-    window.open(`http://localhost:8000/auth/google/callback`, "_self");
+    window.open(`/auth/google/callback`, "_self");
   };
 
   return (

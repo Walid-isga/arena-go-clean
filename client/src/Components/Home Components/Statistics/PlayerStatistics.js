@@ -19,7 +19,7 @@ export default function PlayerStatistics({ userInfo }) {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/booking/user/${userInfo._id}`);
+        const res = await axios.get(`/booking/user/${userInfo._id}`);
         const confirmed = res.data.filter(b => b.status === "Confirmed");
 
         const foot = confirmed.filter(b => b.field?.sport === "Football").length;

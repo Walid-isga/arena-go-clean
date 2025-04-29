@@ -43,8 +43,8 @@ export default function ReservationsTable() {
       const token = localStorage.getItem("token");
       const endpoint =
         newStatus === "Confirmed"
-          ? `http://localhost:8000/booking/confirm/${id}`
-          : `http://localhost:8000/booking/reject/${id}`;
+          ? `/booking/confirm/${id}`
+          : `/booking/reject/${id}`;
 
       await axios.patch(endpoint, {}, {
         headers: {

@@ -1,7 +1,9 @@
+// client/src/axiosConfig.js
 import axios from "axios";
+import { API_URL } from "./api";
 
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL, // ex: https://arena-go-clean-production.up.railway.app
+  baseURL: API_URL,
   withCredentials: true,
 });
 
