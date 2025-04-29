@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 import AdminNavbar from "../admin/AdminNavbar"; // ✅ Import AdminNavbar
 
 export default function Fields() {
@@ -21,7 +21,7 @@ export default function Fields() {
 
   const fetchFields = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8000/fields");
+      const { data } = await axios.get("/fields");
       setFields(data);
     } catch (err) {
       console.error("Erreur de chargement des terrains :", err);

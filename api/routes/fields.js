@@ -1,6 +1,6 @@
 import express from "express";
 import Field from "../models/field.js";
-import { createField, updateField, deleteField, getAllFields, getField } from "../controllers/field.js";
+import { createField, updateField, deleteField, getAllFields, getField, getFieldsBySport } from "../controllers/field.js";
 import multer from "multer";
 import path from "path";
 
@@ -23,5 +23,6 @@ router.put("/:id", updateField); // Modifier un terrain
 router.delete("/:id", deleteField); // Supprimer un terrain
 router.get("/:id", getField); // Récupérer un seul terrain
 router.get("/", getAllFields); // Récupérer tous les terrains
+router.get("/", getFieldsBySport);
 
 export default router;

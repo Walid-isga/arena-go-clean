@@ -17,16 +17,31 @@ export default function FilterFields({ uniqueField, onFilter }) {
 
   return (
     <FormControl
-      variant="filled"
+      variant="outlined"
       fullWidth
       sx={{
         minWidth: 300,
         maxWidth: 600,
-        backgroundColor: "#2a2a2a",
-        borderRadius: 1,
-        "& .MuiInputBase-input": { color: "#fff" },
-        "& .MuiInputLabel-root": { color: "#aaa" },
-        "& .MuiSvgIcon-root": { color: "#ccc" },
+        backgroundColor: "#ffffff",
+        borderRadius: 2,
+        "& .MuiInputBase-root": {
+          color: "#003566 !important",
+          fontWeight: "bold",
+          borderRadius: "12px !important",
+        },
+        "& .MuiInputLabel-root": {
+          color: "#003566 !important",
+          fontWeight: "bold",
+        },
+        "& fieldset": {
+          borderColor: "#003566 !important",
+        },
+        "&:hover fieldset": {
+          borderColor: "#FF6B00 !important",
+        },
+        "& .MuiSvgIcon-root": {
+          color: "#003566 !important",
+        },
       }}
     >
       <InputLabel id="filter-field-label">🏟️ Sélectionner un terrain</InputLabel>
@@ -35,6 +50,7 @@ export default function FilterFields({ uniqueField, onFilter }) {
         id="filter-field-select"
         value={field}
         onChange={handleChange}
+        label="🏟️ Sélectionner un terrain"
       >
         <MenuItem value="">
           <em>Tous</em>

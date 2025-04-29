@@ -1,0 +1,135 @@
+/* ====== Global ArenaGo Booking Page ====== */
+
+.booking-container {
+    margin-top: 40px !important;
+    margin-bottom: 60px !important;
+    background: #ffffff !important;
+  }
+  
+  .booking-title {
+    color: #003566 !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-bottom: 30px !important;
+  }
+  
+  .booking-section {
+    background: #ffffff !important;
+    padding: 20px !important;
+    border-radius: 16px !important;
+    box-shadow: 0px 4px 12px rgba(0, 53, 102, 0.08) !important;
+    margin-bottom: 30px !important;
+  }
+  
+  /* ===== FullCalendar ArenaGo style ===== */
+  .fc {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    padding: 15px !important;
+    box-shadow: 0px 4px 12px rgba(0, 53, 102, 0.08) !important;
+  }
+  
+  .fc-toolbar-title {
+    font-size: 1.6rem !important;
+    font-weight: bold !important;
+    color: #003566 !important;
+  }
+  
+  .fc-button {
+    background-color: #FF6B00 !important;
+    border-radius: 8px !important;
+    font-weight: bold !important;
+  }
+  
+  .fc-button:hover {
+    background-color: #e65c00 !important;
+  }
+  
+  /* Events */
+  .event-confirmed {
+    background-color: #f44336 !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+  }
+  
+  .event-available-morning {
+    background-color: #81C784 !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+  }
+  
+  .event-available-evening {
+    background-color: #388E3C !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+    cursor: pointer;
+  }
+  
+  /* ===== Modal ArenaGo style ===== */
+  .modal-box {
+    background-color: #ffffff !important;
+    border-radius: 16px !important;
+    padding: 30px !important;
+    color: #003566 !important;
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  /* Modal title */
+  .modal-title {
+    color: #003566 !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-bottom: 20px !important;
+  }
+  
+  /* Inputs dans le modal */
+  input, textarea, .MuiInputBase-root {
+    background-color: #f9f9f9 !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+  }
+  
+  input:focus, textarea:focus {
+    border: 1px solid #FF6B00 !important;
+    box-shadow: 0 0 8px #FF6B00 !important;
+  }
+  
+  /* Boutons dans le Modal */
+  .booking-btn {
+    font-weight: bold !important;
+    text-transform: none !important;
+    border-radius: 10px !important;
+  }
+  
+  .booking-btn-cancel {
+    background-color: #e0e0e0 !important;
+    color: #003566 !important;
+    border: none !important;
+  }
+  
+  .booking-btn-cancel:hover {
+    background-color: #cccccc !important;
+  }
+  
+  .booking-btn-reserve {
+    background-color: #FF6B00 !important;
+    color: #ffffff !important;
+    border: none !important;
+  }
+  
+  .booking-btn-reserve:hover {
+    background-color: #e65c00 !important;
+  }
+  
+  /* Animation Fade In */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .fade-in {
+    animation: fadeIn 1s ease-in-out !important;
+  }
+  

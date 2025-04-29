@@ -1,17 +1,58 @@
+/* src/Components/Home Components/Slide Show/SlideShow.css */
+
+/* 🌟 Conteneur principal */
 .slideshow {
-    height: 200px;
-    width: 580px;
-    min-width: auto;
-    max-width: 100%;
-    margin-top: 30px;
-    margin-right: 30px;
-}
-
-.slideshowimage {
-    border-radius: 5px;
-    height: 182px;
-}
-
-.fieldtype {
-    font-weight: bold;
-}
+    margin-top: 30px !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+  }
+  
+  /* 🌟 Images */
+  .slideshowimage {
+    width: 100% !important;
+    height: 250px !important;
+    object-fit: cover !important;
+    transition: transform 0.4s ease !important;
+    border-radius: 16px !important;
+  }
+  
+  /* 🌟 Zoom au hover */
+  .slide-overlay:hover .slideshowimage {
+    transform: scale(1.05) !important;
+  }
+  
+  /* 🌟 Overlay transparent blanc */
+  .slide-overlay {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  
+  .slide-overlay::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    opacity: 0 !important;
+    transition: opacity 0.4s ease !important;
+    z-index: 2 !important;
+    border-radius: 16px !important;
+  }
+  
+  .slide-overlay:hover::after {
+    opacity: 1 !important;
+  }
+  
+  /* 🌟 Titres sur les images */
+  .fieldtype {
+    font-weight: bold !important;
+    font-size: 26px !important;
+    color: #003566 !important;
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    border-radius: 8px !important;
+    padding: 8px 14px !important;
+    display: inline-block !important;
+  }
+  

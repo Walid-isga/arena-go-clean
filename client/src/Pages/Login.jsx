@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
@@ -25,17 +25,15 @@ export default function Login() {
     try {
       const res = await axios.post("http://localhost:8000/auth/login", formData);
       const { token, user } = res.data;
-  
+
       if (!token || !user) {
         toast.error("❌ Identifiants incorrects ou utilisateur non vérifié.");
         return;
       }
-  
+
       localStorage.setItem("token", token);
       setUser(user);
       toast.success("✅ Connexion réussie !");
-  
-      // ➡️ Redirection selon le type d'utilisateur
       if (user.isAdmin) {
         navigate("/admin");
       } else {
@@ -45,69 +43,84 @@ export default function Login() {
       toast.error(err.response?.data?.message || "❌ Erreur lors de la connexion.");
     }
   };
-  
 
   return (
-    <Grid container sx={{ height: "100vh" }}>
+    <Grid container sx={{ height: "100vh", width: "100%", margin: 0 }}>
+      
+      {/* Partie Formulaire */}
       <Grid
         item
         xs={12}
         md={6}
         sx={{
-          backgroundColor: "#1e1e1e",
-          color: "#fff",
+          backgroundColor: "#ffffff",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          px: 4,
+          px: { xs: 2, md: 6 },
         }}
       >
         <Card
-          elevation={4}
+          elevation={10}
           sx={{
             p: 4,
-            maxWidth: 400,
             width: "100%",
-            backgroundColor: "#121212",
-            borderRadius: 3,
+            maxWidth: 400,
+            backgroundColor: "#1e1e1e",
+            borderRadius: 5,
             textAlign: "center",
+            color: "#fff",
+            boxShadow: "0 0 20px rgba(0,0,0,0.4)",
+            transition: "transform 0.3s ease-in-out",
+            "&:hover": {
+              transform: "scale(1.02)",
+            },
           }}
         >
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
-            🔐 Connexion à Sportify
+          <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: "#156D9D" }}>
+            Connexion à ArenaGo
           </Typography>
+
           <Typography variant="body2" sx={{ color: "#aaa", mb: 2 }}>
             Connecte-toi avec ton e-mail et mot de passe
           </Typography>
 
-          <Divider sx={{ my: 2, backgroundColor: "#333" }} />
+          <Divider sx={{ my: 2, backgroundColor: "#156D9D" }} />
 
           <TextField
             label="Email"
             name="email"
             fullWidth
-            margin="normal"
+            margin="dense"
             value={formData.email}
             onChange={handleChange}
             InputLabelProps={{ style: { color: "#aaa" } }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputProps={{ style: { color: "#156D9D" } }}
           />
           <TextField
             label="Mot de passe"
             name="password"
             type="password"
             fullWidth
-            margin="normal"
+            margin="dense"
             value={formData.password}
             onChange={handleChange}
             InputLabelProps={{ style: { color: "#aaa" } }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputProps={{ style: { color: "#156D9D" } }}
           />
 
           <Button
             variant="contained"
             fullWidth
-            sx={{ mt: 2, py: 1.3, fontWeight: "bold" }}
+            sx={{
+              mt: 2,
+              py: 1.3,
+              fontWeight: "bold",
+              backgroundColor: "#FF6B00",
+              "&:hover": {
+                backgroundColor: "#e65c00",
+              },
+            }}
             onClick={handleLogin}
           >
             Se connecter
@@ -115,25 +128,37 @@ export default function Login() {
 
           <Typography variant="body2" sx={{ mt: 2 }}>
             Pas encore de compte ?{" "}
-            <Link to="/register" style={{ color: "#4FC3F7", textDecoration: "none" }}>
+            <Link to="/register" style={{ color: "#FF6B00", fontWeight: "bold", textDecoration: "none" }}>
               S'inscrire
             </Link>
           </Typography>
         </Card>
       </Grid>
 
+      {/* Partie Logo ArenaGo */}
       <Grid
         item
         xs={false}
         md={6}
         sx={{
-          backgroundImage: "url('/images/Sportify.png')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-          backgroundPosition: "center",
-          backgroundColor: "#121212",
+          backgroundColor: "#ffffff",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden",
         }}
-      />
+      >
+        <img
+          src="/images/Arenago.png"
+          alt="ArenaGo Logo"
+          style={{
+            maxWidth: "65%",
+            maxHeight: "85vh",
+            height: "auto",
+            animation: "float 3s ease-in-out infinite",
+          }}
+        />
+      </Grid>
     </Grid>
   );
 }

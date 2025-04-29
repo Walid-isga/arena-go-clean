@@ -10,8 +10,11 @@ import {
   TextField,
   Typography,
   Paper,
+  CircularProgress,
 } from "@mui/material";
-import axios from "axios";
+import axios from "../axiosConfig";
+import { toast } from "react-toastify";
+import "../styles/MonProfil.css"; // 🔥 Import du style spécial
 
 export default function MonProfil() {
   const [user, setUser] = useState(null);
@@ -23,16 +26,16 @@ export default function MonProfil() {
     password: "",
     picture: "",
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:8000/users/me", {
+        const res = await axios.get("/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const userData = res.data;
-
         setUser(userData);
         setForm({
           username: userData.username || "",
@@ -46,7 +49,6 @@ export default function MonProfil() {
         console.error("Erreur récupération utilisateur :", err);
       }
     };
-
     fetchUser();
   }, []);
 
@@ -57,8 +59,8 @@ export default function MonProfil() {
 
   const handleUpdate = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
-
       const formData = new FormData();
       formData.append("username", form.username);
       formData.append("email", form.email);
@@ -78,8 +80,7 @@ export default function MonProfil() {
         },
       });
 
-      // 🔥 Recharge les données utilisateur après mise à jour
-      const updated = await axios.get("http://localhost:8000/users/me", {
+      const updated = await axios.get("/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(updated.data);
@@ -92,49 +93,47 @@ export default function MonProfil() {
         picture: updated.data.picture || "",
       });
 
-      alert("✅ Profil mis à jour !");
+      toast.success("✅ Profil mis à jour !");
     } catch (err) {
       console.error("Erreur de mise à jour :", err);
-      alert("❌ Erreur lors de la mise à jour.");
+      toast.error("❌ Erreur lors de la mise à jour.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const getPictureUrl = () => {
     if (!form.picture) return null;
-  
     if (form.picture instanceof File) {
       return URL.createObjectURL(form.picture);
     }
-  
     if (typeof form.picture === "string" && form.picture.startsWith("/uploads")) {
       return `http://localhost:8000${form.picture}`;
     }
-  
     return form.picture;
   };
-  
 
-  if (!user) return <p>Chargement du profil...</p>;
+  if (!user) return <p style={{ textAlign: "center", marginTop: "50px" }}>Chargement du profil...</p>;
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 6 }}>
-      <Paper elevation={4} sx={{ p: 4, backgroundColor: "#1e1e1e", color: "#fff", borderRadius: 3 }}>
-        <Box textAlign="center" mb={4}>
-        <Avatar
-          src={getPictureUrl()}
-          alt="avatar"
-          sx={{ width: 100, height: 100, margin: "0 auto", border: "2px solid #4FC3F7" }}
-        />
+    <Container maxWidth="sm" className="profile-container">
+      <Paper elevation={4} className="profile-card">
+        <Box textAlign="center">
+          <Avatar
+            src={getPictureUrl()}
+            alt="avatar"
+            className="profile-avatar"
+          />
 
-          <Typography variant="h5" mt={2} fontWeight="bold">
+          <Typography className="profile-title">
             👤 Mon profil
           </Typography>
-          <Typography variant="body2" color="gray">
+          <Typography className="profile-subtitle">
             Visualisez et mettez à jour vos informations personnelles
           </Typography>
         </Box>
 
-        <Card sx={{ backgroundColor: "#121212", color: "#fff", borderRadius: 2 }}>
+        <Card className="profile-inner-card">
           <CardContent>
             <Grid container spacing={3}>
               {[
@@ -146,31 +145,36 @@ export default function MonProfil() {
                 <Grid item xs={12} key={field.name}>
                   <TextField
                     fullWidth
+                    className="profile-input"
                     label={field.label}
                     name={field.name}
                     value={form[field.name]}
                     onChange={handleChange}
-                    variant="filled"
-                    sx={{ input: { color: "#fff" } }}
-                    InputLabelProps={{ style: { color: "#aaa" } }}
+                    variant="outlined"
+                    InputLabelProps={{ style: { color: "#666" } }}
                   />
                 </Grid>
               ))}
+
               <Grid item xs={12}>
                 <TextField
                   fullWidth
+                  className="profile-input"
                   label="Mot de passe (nouveau si modifié)"
                   name="password"
                   type="password"
                   value={form.password}
                   onChange={handleChange}
-                  variant="filled"
-                  sx={{ input: { color: "#fff" } }}
-                  InputLabelProps={{ style: { color: "#aaa" } }}
+                  variant="outlined"
+                  InputLabelProps={{ style: { color: "#666" } }}
                 />
               </Grid>
+
               <Grid item xs={12}>
-                <Button variant="outlined" component="label" fullWidth sx={{ mt: 2 }}>
+                <Button
+                  component="label"
+                  className="profile-upload-btn"
+                >
                   📁 Choisir une image de profil
                   <input
                     type="file"
@@ -182,18 +186,24 @@ export default function MonProfil() {
                   />
                 </Button>
                 {form.picture && (
-                  <Typography variant="caption" sx={{ mt: 1, display: "block", textAlign: "center" }}>
+                  <Typography className="profile-image-text">
                     {form.picture instanceof File ? form.picture.name : "Image actuelle"}
                   </Typography>
                 )}
               </Grid>
-              <Grid item xs={12} textAlign="right">
+
+              <Grid item xs={12} textAlign="center">
                 <Button
                   variant="contained"
                   onClick={handleUpdate}
-                  sx={{ backgroundColor: "#4CAF50" }}
+                  disabled={loading}
+                  className="profile-update-btn"
                 >
-                  💾 Mettre à jour
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: "#fff" }} />
+                  ) : (
+                    "💾 Mettre à jour"
+                  )}
                 </Button>
               </Grid>
             </Grid>

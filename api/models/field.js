@@ -24,7 +24,7 @@ const FieldSchema = new mongoose.Schema({
     },
     surfaceType: {
         type: String,
-        enum: ['Grass', 'Turf', 'Hard Court', 'Clay', 'Other'] // we can make it as a file for enums
+        enum: ['Gazon', 'Synthétique', 'Béton', 'Terre battue', 'Autre'] // we can make it as a file for enums
     },
 
     location: {

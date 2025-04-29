@@ -4,7 +4,7 @@ import {
   Box, Button, Modal, TextField, Switch, FormControlLabel,
   Grid, Typography
 } from "@mui/material";
-import axios from "axios";
+import axios from "../axiosConfig";
 
 const style = {
   position: "absolute", top: "50%", left: "50%",

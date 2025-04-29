@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Typography, Box, Card, CardMedia, CardContent, Button, Divider } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 
 export default function FieldDetails() {
   const { id } = useParams();

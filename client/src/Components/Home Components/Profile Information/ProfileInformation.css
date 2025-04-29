@@ -1,73 +1,60 @@
-.ProfileInformation {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    background-color: white;
-    border-radius: 5px;
-    text-align: start;
-    width: 450px;
-    margin: 30px 30px 30px 20px;
-}
+/* src/Components/Home Components/Profile Information/ProfileInformation.css */
 
-.header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-left: 20px;
-    margin-right: 20px;
-    width: 93%;
-}
-
-.title {
-    color: #0345A0;
-    margin: 20px 20px 20px 0px;
-    font-weight: bold;
-    align-self: flex-start;
-}
-
-.labels {
-    margin-left: 20px;
-    align-self: flex-start;
-    color: gray;
-    font-weight: bold;
-}
-
-.information {
-    display: flex;
-    flex-direction: row;
-    height: 30px;
-}
-
-.data {
-    margin-left: 30px;
-}
-
-.profile {
-    width: 100px;
-    border-radius: 5%;
-    margin-left: 20px;
-    margin-bottom: 20px;
-}
-
-.content {
-    display: flex;
-    flex-direction: row;
-}
-
-.text-content {
-    display: flex;
-    flex-direction: column;
-}
-
-.admin {
-    margin-left: 63px;
-}
-
-.profile-icon {
-    width: 50px;
-}
-
-p {
-    text-transform: capitalize;
-}
+/* 🌟 Carte principale */
+.profile-card {
+    background: #d9d9d9 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 24px rgba(0, 53, 102, 0.1) !important;
+    overflow: hidden !important;
+    animation: fadeIn 1s ease-in-Sout !important;
+  }
+  
+  /* 🌟 Avatar */
+  .profile-avatar {
+    width: 120px !important;
+    height: 120px !important;
+    border: 3px solid #5BB0D8 !important;
+    margin-bottom: 15px !important;
+  }
+  
+  /* 🌟 Username */
+  .profile-username {
+    font-weight: bold !important;
+    color: #003566 !important;
+  }
+  
+  /* 🌟 Sous-titre */
+  .profile-role {
+    color: #666666 !important;
+    font-size: 14px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  /* 🌟 Informations */
+  .profile-info {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 20px 30px !important;
+    background: #d9d9d9 !important;
+    border-top: 1px solid #d9d9d9 !important;
+  }
+  
+  /* 🌟 Labels */
+  .profile-label {
+    font-weight: bold !important;
+    color: #003566 !important;
+    margin-top: 10px !important;
+  }
+  
+  /* 🌟 Données */
+  .profile-data {
+    color: #555555 !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* ✨ Animation fadeIn */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
+  }
+  

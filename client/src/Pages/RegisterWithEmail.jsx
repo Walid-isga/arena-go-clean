@@ -8,8 +8,8 @@ import {
   Divider,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "../axiosConfig";
 
 export default function RegisterWithEmail() {
   const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ export default function RegisterWithEmail() {
     phone: "",
     otp: "",
   });
-  const [step, setStep] = useState(1); // 1 = formulaire, 2 = otp
+  const [step, setStep] = useState(1); 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -74,141 +74,210 @@ export default function RegisterWithEmail() {
   };
 
   return (
-    <Grid container sx={{ height: "100vh" }}>
+    <Grid container sx={{ height: "100vh", width: "100%", margin: 0, overflow: "hidden" }}>
+      
+      {/* Partie Formulaire */}
       <Grid
         item
         xs={12}
         md={6}
         sx={{
-          backgroundColor: "#1e1e1e",
-          color: "#fff",
+          backgroundColor: "#ffffff",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          px: 4,
+          px: 2,
         }}
       >
         <Card
-          elevation={4}
+          elevation={10}
           sx={{
-            p: 4,
-            maxWidth: 400,
+            p: 3,
             width: "100%",
-            backgroundColor: "#121212",
-            borderRadius: 3,
+            maxWidth: 370,
+            backgroundColor: "#1e1e1e",
+            borderRadius: 4,
             textAlign: "center",
+            color: "#fff",
+            boxShadow: "0 0 15px rgba(0,0,0,0.4)",
+            transition: "transform 0.3s ease-in-out", // ✅ Animation fluide
+            "&:hover": {
+              transform: "scale(1.02)", // ✅ Grandit un peu au survol
+            }
           }}
         >
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
-            {step === 1 ? "Créer un compte" : "Vérifier l'e-mail"}
+          <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: "#156D9D" }}>
+            {step === 1 ? "Créer un compte" : "Vérifie ton e-mail"}
           </Typography>
 
-          <Divider sx={{ my: 2, backgroundColor: "#333" }} />
+          <Divider sx={{ my: 1, backgroundColor: "#156D9D" }} />
 
           {step === 1 ? (
             <>
               <TextField
                 label="Nom d'utilisateur"
                 name="username"
+                size="small"
                 fullWidth
                 onChange={handleChange}
-                margin="normal"
+                margin="dense"
                 InputLabelProps={{ style: { color: "#aaa" } }}
-                InputProps={{ style: { color: "#fff" } }}
+                InputProps={{ style: { color: "#156D9D" } }}
               />
               <TextField
                 label="Adresse e-mail"
                 name="email"
+                size="small"
                 fullWidth
                 onChange={handleChange}
-                margin="normal"
+                margin="dense"
                 InputLabelProps={{ style: { color: "#aaa" } }}
-                InputProps={{ style: { color: "#fff" } }}
+                InputProps={{ style: { color: "#156D9D" } }}
               />
               <TextField
                 label="Mot de passe"
                 name="password"
                 type="password"
+                size="small"
                 fullWidth
                 onChange={handleChange}
-                margin="normal"
+                margin="dense"
                 InputLabelProps={{ style: { color: "#aaa" } }}
-                InputProps={{ style: { color: "#fff" } }}
+                InputProps={{ style: { color: "#156D9D" } }}
               />
               <TextField
                 label="Ville"
                 name="city"
+                size="small"
                 fullWidth
                 onChange={handleChange}
-                margin="normal"
+                margin="dense"
                 InputLabelProps={{ style: { color: "#aaa" } }}
-                InputProps={{ style: { color: "#fff" } }}
+                InputProps={{ style: { color: "#156D9D" } }}
               />
               <TextField
                 label="Numéro de téléphone"
                 name="phone"
+                size="small"
                 fullWidth
                 onChange={handleChange}
-                margin="normal"
+                margin="dense"
                 InputLabelProps={{ style: { color: "#aaa" } }}
-                InputProps={{ style: { color: "#fff" } }}
+                InputProps={{ style: { color: "#156D9D" } }}
               />
               <Button
                 variant="contained"
                 fullWidth
-                sx={{ mt: 2, py: 1.3 }}
+                sx={{
+                  mt: 2,
+                  py: 1,
+                  fontWeight: "bold",
+                  backgroundColor: "#FF6B00",
+                  "&:hover": {
+                    backgroundColor: "#e65c00",
+                  },
+                }}
                 onClick={handleRegister}
               >
                 Créer le compte
               </Button>
+
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                Déjà un compte ?{" "}
+                <Link
+                  to="/login"
+                  style={{
+                    color: "#FF6B00",
+                    fontWeight: "bold",
+                    textDecoration: "none",
+                  }}
+                >
+                  Se connecter
+                </Link>
+              </Typography>
             </>
           ) : (
             <>
               <Typography variant="body2" sx={{ mb: 2 }}>
-                Un code de vérification a été envoyé à votre adresse e-mail.
+                📧 Un code de vérification a été envoyé par e-mail.
               </Typography>
               <TextField
                 label="Code OTP"
                 name="otp"
+                size="small"
                 fullWidth
                 onChange={handleChange}
-                margin="normal"
+                margin="dense"
                 InputLabelProps={{ style: { color: "#aaa" } }}
-                InputProps={{ style: { color: "#fff" } }}
+                InputProps={{ style: { color: "#156D9D" } }}
               />
               <Button
                 variant="contained"
                 fullWidth
-                sx={{ mt: 2, py: 1.3 }}
+                sx={{
+                  mt: 2,
+                  py: 1,
+                  fontWeight: "bold",
+                  backgroundColor: "#FF6B00",
+                  "&:hover": {
+                    backgroundColor: "#e65c00",
+                  },
+                }}
                 onClick={handleVerifyOtp}
               >
-                Vérifier le code
+                Vérifier
               </Button>
               <Button
-                variant="outlined"
+                variant="text"
                 fullWidth
-                sx={{ mt: 1 }}
+                sx={{ mt: 1, color: "#FF6B00", fontWeight: "bold" }}
                 onClick={handleResendOtp}
               >
                 🔁 Renvoyer le code OTP
               </Button>
+
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                Déjà un compte ?{" "}
+                <Link
+                  to="/login"
+                  style={{
+                    color: "#FF6B00",
+                    fontWeight: "bold",
+                    textDecoration: "none",
+                  }}
+                >
+                  Se connecter
+                </Link>
+              </Typography>
             </>
           )}
         </Card>
       </Grid>
 
+      {/* Partie Logo ArenaGo */}
       <Grid
         item
         xs={false}
         md={6}
         sx={{
-          backgroundImage: "url('/images/Sportify.png')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-          backgroundPosition: "center",
-          backgroundColor: "#121212",
+          backgroundColor: "#ffffff",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden",
         }}
-      />
+      >
+        <img
+          src="/images/Arenago.png"
+          alt="ArenaGo Logo"
+          style={{
+            maxWidth: "65%",
+            maxHeight: "85vh",
+            height: "auto",
+            animation: "float 3s ease-in-out infinite",
+          }}
+        />
+      </Grid>
     </Grid>
   );
 }

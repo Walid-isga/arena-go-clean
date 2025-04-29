@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import LockPersonIcon from "@mui/icons-material/LockPerson";
 import { toast } from "react-toastify";
-import axios from "axios";
+import axios from "../axiosConfig";
 
 function Signup() {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ function Signup() {
   useEffect(() => {
     const checkGoogleAuth = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8000/auth/login/success", {
+        const { data } = await axios.get("/auth/login/success", {
           withCredentials: true,
         });
         if (data?.user) {
@@ -112,7 +112,7 @@ function Signup() {
         xs={false}
         md={6}
         sx={{
-          backgroundImage: "url('/images/Sportify.png')",
+          backgroundImage: "url('/images/ArenaGo.png')",
           backgroundRepeat: "no-repeat",
           backgroundSize: "contain",
           backgroundPosition: "center",

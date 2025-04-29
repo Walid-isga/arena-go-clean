@@ -8,7 +8,7 @@ const darkTheme = createTheme({
       paper: "#1e1e1e",
     },
     primary: {
-      main: "#54B435", // Vert Sportify
+      main: "#54B435", // Vert ArenaGo
     },
     secondary: {
       main: "#03DAC6",

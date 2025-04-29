@@ -1,5 +1,5 @@
 // 📁 api/utils/sendOTP.js
-import axios from "axios";
+import axios from "axios"; // ← Normal
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -8,12 +8,12 @@ export const sendOTP = async (toEmail, otp) => {
   const API_KEY = process.env.BREVO_API_KEY;
 
   const payload = {
-    sender: { name: "Sportify", email: "walidfath02@gmail.com" },
+    sender: { name: "ArenaGo", email: "walidfath02@gmail.com" },
     to: [{ email: toEmail }],
-    subject: "Votre code de vérification Sportify",
+    subject: "Votre code de vérification ArenaGo",
     htmlContent: `
       <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2>Bienvenue sur Sportify !</h2>
+        <h2>Bienvenue sur ArenaGo !</h2>
         <p>Voici votre code de vérification :</p>
         <h1 style="color: #4f46e5;">${otp}</h1>
         <p>Ce code est valable pendant 10 minutes.</p>

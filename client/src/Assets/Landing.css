@@ -1,0 +1,458 @@
+/* ======== RESET GLOBAL ======== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background: #ffffff;
+  }
+  
+  /* ======== LANDING WRAPPER ======== */
+  .landing-layout {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* ======== NAVBAR ======== */
+  .navbar-landing {
+    width: 100%;
+    background: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .navbar-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    height: 50px;
+  }
+  
+  .navbar-right {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 30px;
+    justify-content: center; /* 🔥 Centre un peu les liens */
+    align-items: center;
+  }
+  
+  /* Liens standards */
+  .navbar-links a {
+    color: #003566;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  
+  .navbar-links a:hover {
+    color: #FF6B00;
+  }  
+  
+  /* Liens standards (Accueil, Apropos, Contact) */
+  .navbar-right a {
+    color: #003566;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  
+  .navbar-right a:hover {
+    color: #FF6B00;
+  }
+  
+  /* Bouton Se connecter */
+  .btn-login {
+    background: #d9d9d9;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background 0.3s;
+  }
+  
+  .btn-login:hover {
+    background: #333333;
+  }
+  
+  /* Bouton Créer un compte */
+  .btn-register {
+    background: #FF6B00;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background 0.3s;
+  }
+  
+  .btn-register:hover {
+    background: #333333;
+  }
+  
+  
+  /* ======== HERO SECTION ======== */
+  .hero-section {
+    width: 100%;
+    height: auto; /* plus de 100vh fixe */
+    background: #ffffff;
+    padding: 120px 20px 20px; /* 🔥 moins de padding en bas */
+    text-align: center;
+  }  
+  
+  .hero-content {
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .hero-content h1 {
+    font-size: 3rem;
+    color: #003566;
+    margin-bottom: 20px;
+  }
+  
+  .hero-content p {
+    font-size: 1.2rem;
+    color: #003566;
+  }
+  
+  .btn-hero {
+    display: inline-block;
+    margin-top: 30px;
+    background: #FF6B00;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  
+  .btn-hero:hover {
+    background: #e65c00;
+  }
+  
+  /* ======== LOGO SECTION ======== */
+  .logo-section {
+    width: 100%;
+    padding: 0px 20px 20px; /* 🔥 zéro padding en haut */
+    text-align: center;
+    background: #ffffff;
+  }  
+  
+  .hero-logo {
+    height: 230px;
+    width: auto;
+    margin-top: 10px; /* au lieu de 20px */
+    margin-bottom: 0;
+  }  
+  
+  /* ======== SLOGAN SECTION ======== */
+  .slogan-section {
+    width: 100%;
+    padding: 40px 20px;
+    text-align: center;
+    background: #ffffff;
+  }
+  
+  .hero-slogan {
+    font-size: 2.2rem;
+    color: #003566;
+    margin-top: 20px;
+    line-height: 1.4;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
+  }
+  
+  /* ======== PRESENTATION SECTION ======== */
+  .presentation-section {
+    width: 100%;
+    padding: 40px 20px;
+    text-align: center;
+    background: #ffffff;
+  }
+  
+  .presentation-section p {
+    font-size: 1.2rem;
+    color: #555555;
+    max-width: 800px;
+    margin: 20px auto;
+    line-height: 1.6;
+  }
+  
+  /* ======== EVENTS SECTION ======== */
+  .events-section {
+    width: 100%;
+    background: #ffffff;
+    padding: 80px 20px;
+    text-align: center;
+  }
+  
+  .events-section h2 {
+    font-size: 2.5rem;
+    color: #003566;
+    margin-bottom: 40px;
+  }
+  
+  .events-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+  }
+  
+  .event-card {
+    background: #f7f7f7;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+  }
+  
+  .event-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .event-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .event-card h3 {
+    color: #003566;
+    margin-top: 10px;
+  }
+  
+  .event-card p {
+    color: #666666;
+  }
+  
+  /* ======== FOOTER SECTION ======== */
+  .footer-landing {
+    width: 100%;
+    background: #003566;
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    margin-top: auto;
+  }
+  
+  .footer-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+  }
+  
+  .footer-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+  
+  .footer-links a:hover {
+    color: #FF6B00;
+  }
+  
+  .footer-landing p {
+    margin-top: 20px;
+    font-size: 0.9rem;
+  }
+
+  .apropos-hero {
+    text-align: center;
+    padding: 100px 20px 40px;
+    background-color: #ffffff;
+  }
+  
+  .apropos-hero h1 {
+    font-size: 3rem;
+    color: #003566;
+  }
+  
+  .apropos-subtitle {
+    font-size: 1.5rem;
+    color: #FF6B00;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .apropos-section {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 0 20px;
+    text-align: left;
+  }
+  
+  .apropos-section h2 {
+    color: #003566;
+    font-size: 2rem;
+    margin-bottom: 15px;
+  }
+  
+  .apropos-section p {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+  
+  .apropos-list {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .apropos-list li {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: #555;
+  }
+  
+  .contact-hero {
+    text-align: center;
+    padding: 100px 20px 40px;
+    background: #ffffff;
+  }
+  
+  .contact-hero h1 {
+    font-size: 3rem;
+    color: #003566;
+  }
+  
+  .contact-subtitle {
+    font-size: 1.4rem;
+    color: #FF6B00;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .contact-section {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 20px;
+  }
+  
+  .contact-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+  }
+  
+  .contact-form {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+    background: #f9f9f9;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #ffffff;
+    color: #333333;
+  }
+  
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    border: 1px solid #FF6B00;
+    outline: none;
+  }
+  
+  .btn-send {
+    padding: 12px;
+    background: #FF6B00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .btn-send:hover {
+    background: #e65c00;
+  }
+  
+  .contact-info {
+    flex: 1;
+    min-width: 250px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    font-size: 1.1rem;
+    color: #444;
+    text-align: left;
+  }
+  
+  .contact-info h3 {
+    color: #003566;
+    margin-bottom: 20px;
+  }  
+  
+  
+  /* ======== ANIMATIONS ======== */
+  .animated-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1.5s ease forwards;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

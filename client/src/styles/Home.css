@@ -1,0 +1,55 @@
+/* src/styles/Home.css */
+
+/* 📦 Container principal */
+.home-container {
+    padding-top: 40px !important;
+    padding-bottom: 60px !important;
+    background: #ffffff !important;
+  }
+  
+  /* 🌀 Animation Fade In */
+  .fade-in {
+    animation: fadeIn 1s ease !important;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* 📋 Cartes */
+  .home-card {
+    background: #e6e6e6 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 12px rgba(0, 53, 102, 0.1) !important;
+  }
+  
+  /* 🧾 Sections */
+  .home-section {
+    background: #e6e6e6 !important;
+    padding: 24px !important;
+    border-radius: 16px !important;
+  }
+  
+  /* 🖌️ Titres */
+  .home-title {
+    color: #003566 !important;
+    font-weight: bold !important;
+  }
+  
+  .home-subtitle {
+    color: #003566 !important;
+    font-weight: bold !important;
+    margin-bottom: 20px !important;
+  }
+  
+  /* ⏳ Loader de chargement */
+  .home-loader {
+    height: 80vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: #ffffff !important;
+  }
+  

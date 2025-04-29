@@ -15,6 +15,7 @@ import statsRoutes from "./routes/stats.js";
 import userRoutes from "./routes/user.js";
 import chatbotRoutes from './routes/chatbotRoutes.js';
 import adminRoutes from "./routes/admin.js";
+import contactRoutes from './routes/contact.js';
 
 const app = express();
 dotenv.config();
@@ -66,6 +67,7 @@ app.use("/fields", fieldsrouter);
 app.use("/booking", bookingrouter);
 app.use("/api/stats", statsRoutes);
 app.use("/admin", adminRoutes);
+app.use('/api/contact', contactRoutes);
 
 
 app.listen(PORT, () => {

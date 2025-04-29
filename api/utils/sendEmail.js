@@ -19,7 +19,7 @@ export const sendBookingConfirmation = async ({ to, teamName, date, starttime, e
   const info = await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to,
-    subject: "✅ Confirmation de votre réservation - Sportify",
+    subject: "✅ Confirmation de votre réservation - ArenaGo",
     html: `
       <h2>✅ Réservation confirmée !</h2>
       <p>Bonjour ${teamName},</p>
@@ -29,7 +29,7 @@ export const sendBookingConfirmation = async ({ to, teamName, date, starttime, e
         <li><strong>Date :</strong> ${date}</li>
         <li><strong>Heure :</strong> de ${starttime} à ${endtime}</li>
       </ul>
-      <p>Merci de votre confiance 🙌<br>— L’équipe Sportify</p>
+      <p>Merci de votre confiance 🙌<br>— L’équipe ArenaGo</p>
     `,
   });
 
@@ -43,7 +43,7 @@ export const sendBookingRefusal = async ({ to, teamName, date, starttime, endtim
   const info = await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to,
-    subject: "❌ Réservation refusée - Sportify",
+    subject: "❌ Réservation refusée - ArenaGo",
     html: `
       <h2>❌ Réservation refusée</h2>
       <p>Bonjour ${teamName},</p>
@@ -53,7 +53,7 @@ export const sendBookingRefusal = async ({ to, teamName, date, starttime, endtim
         <li><strong>Date :</strong> ${date}</li>
         <li><strong>Heure :</strong> de ${starttime} à ${endtime}</li>
       </ul>
-      <p>N’hésitez pas à réserver à un autre créneau disponible.<br>— L’équipe Sportify</p>
+      <p>N’hésitez pas à réserver à un autre créneau disponible.<br>— L’équipe ArenaGo</p>
     `,
   });
 
@@ -64,13 +64,13 @@ export const sendWelcomeEmail = async ({ to, username }) => {
   const info = await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to,
-    subject: "🎉 Bienvenue sur Sportify !",
+    subject: "🎉 Bienvenue sur ArenaGo !",
     html: `
       <h2>Bienvenue ${username} 👋</h2>
       <p>Ton compte a bien été vérifié.</p>
       <p>Tu peux maintenant réserver un terrain !</p>
       <a href="http://localhost:3000/home" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Réserver maintenant</a>
-      <p>— L’équipe Sportify</p>
+      <p>— L’équipe ArenaGo</p>
     `,
   });
 

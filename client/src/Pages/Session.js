@@ -1,22 +1,33 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper, IconButton, Menu, MenuItem,
-  Typography, Container, Button
+  Container,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Chip
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import jsPDF from "jspdf";
-import { useAuth } from "../hooks/useAuth"; // ✅ nouveau
+import axios from "../axiosConfig";
+import { useAuth } from "../hooks/useAuth";
+import "../styles/Session.css";
 
-function Session() {
-  const { user } = useAuth(); // ✅ récupération du user via contexte
-  const [anchorEl, setAnchorEl] = useState(null);
+export default function Session() {
+  const { user } = useAuth();
   const [rows, setRows] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(null);
   const open = Boolean(anchorEl);
-
-  const token = localStorage.getItem("token"); // ✅ pour l'Authorization
+  const token = localStorage.getItem("token");
 
   const fetchFieldDetails = async (fieldId) => {
     try {
@@ -25,35 +36,34 @@ function Session() {
       });
       return response.data;
     } catch (error) {
-      console.error("Error fetching field details:", error);
+      console.error("Erreur terrain:", error);
       return null;
     }
   };
 
   const load = async () => {
-    if (!user || !user._id) return;
-
+    if (!user?._id) return;
     try {
-      const response = await axios.get(`http://localhost:8000/booking/user/${user._id}`, {
+      const { data } = await axios.get(`http://localhost:8000/booking/user/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const enriched = await Promise.all(response.data.map(async (booking) => {
-        const field = await fetchFieldDetails(booking.field);
-        return {
-          id: booking._id,
-          userId: booking.user,
-          date: booking.date.split("T")[0],
-          startTime: booking.starttime,
-          endTime: booking.endtime,
-          field: field ? field.name : "Inconnu",
-          status: booking.status,
-        };
-      }));
-
+      const enriched = await Promise.all(
+        data.map(async (booking) => {
+          const field = await fetchFieldDetails(booking.field);
+          return {
+            id: booking._id,
+            date: booking.date.split("T")[0],
+            startTime: booking.starttime,
+            endTime: booking.endtime,
+            field: field ? field.name : "Inconnu",
+            status: booking.status,
+          };
+        })
+      );
       setRows(enriched);
     } catch (error) {
-      console.error("Erreur :", error);
+      console.error("Erreur:", error);
     }
   };
 
@@ -61,8 +71,8 @@ function Session() {
     load();
   }, [user]);
 
-  const handleClick = (event, index) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick = (e, index) => {
+    setAnchorEl(e.currentTarget);
     setCurrentIndex(index);
   };
 
@@ -80,28 +90,8 @@ function Session() {
       const updated = rows.filter((_, i) => i !== currentIndex);
       setRows(updated);
       handleClose();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleConfirm = async () => {
-    const bookingId = rows[currentIndex].id;
-    try {
-      await axios.patch(
-        `http://localhost:8000/booking/${bookingId}`,
-        { status: "Confirmed" },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const updatedRows = rows.map((row, i) =>
-        i === currentIndex ? { ...row, status: "Confirmed" } : row
-      );
-      setRows(updatedRows);
-      handleClose();
-    } catch (err) {
-      console.error("Erreur confirmation :", err);
+    } catch (error) {
+      console.error("Erreur suppression:", error);
     }
   };
 
@@ -118,106 +108,99 @@ function Session() {
       });
 
       const doc = new jsPDF();
-
       doc.setFont("Helvetica", "bold");
       doc.setFontSize(16);
-      doc.setTextColor(40, 40, 40);
-      doc.text("Sportify - Confirmation de Réservation", 20, 20);
-      doc.setDrawColor(0);
+      doc.setTextColor(0, 0, 0);
+      doc.text("ArenaGo - Confirmation Réservation", 20, 20);
+      doc.setDrawColor(255, 107, 0);
       doc.line(20, 25, 190, 25);
 
       doc.setFont("Helvetica", "normal");
       doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Réservation ID : ${bookingId}`, 20, 40);
+      doc.setTextColor(33, 33, 33);
+      doc.text(`ID Réservation : ${bookingId}`, 20, 40);
       doc.text(`Utilisateur : ${userRes.data.username}`, 20, 50);
       doc.text(`Email : ${userRes.data.email}`, 20, 60);
       doc.text(`Terrain : ${field.data.name}`, 20, 70);
       doc.text(`Sport : ${field.data.sport}`, 20, 80);
       doc.text(`Date : ${booking.data.date.split("T")[0]}`, 20, 90);
-
-      const formatTime = (time) =>
-        new Date(`1970-01-01T${time}`).toLocaleTimeString("fr-FR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-
-      doc.text(
-        `Heure : de ${formatTime(booking.data.starttime)} à ${formatTime(booking.data.endtime)}`,
-        20,
-        100
-      );
-
-      doc.text(`Statut : Confirmé`, 20, 110);
+      doc.text(`Heure : ${booking.data.starttime} - ${booking.data.endtime}`, 20, 100);
+      doc.text(`Statut : Confirmée`, 20, 110);
 
       doc.setFontSize(10);
-      doc.setTextColor(100);
-      doc.text("Merci d’avoir utilisé Sportify !", 20, 130);
+      doc.text("Merci d'avoir choisi ArenaGo !", 20, 130);
 
-      doc.save("sportify-confirmation.pdf");
-    } catch (err) {
-      console.error("Erreur téléchargement PDF :", err);
+      doc.save("arenaGo-confirmation.pdf");
+    } catch (error) {
+      console.error("Erreur téléchargement PDF:", error);
     }
   };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 6, mb: 6 }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3, color: "#fff" }}>
-        📋 Mes Réservations
+      <Typography variant="h4" fontWeight="bold" color="#003566" mb={4}>
+        📝 Mes Réservations
       </Typography>
 
-      <Paper
-        elevation={4}
-        sx={{
-          borderRadius: 3,
-          overflow: "hidden",
-          backgroundColor: "#1e1e1e",
-          color: "#fff",
-        }}
-      >
+      <Paper elevation={4} sx={{ borderRadius: 3, overflow: "hidden" }}>
         <TableContainer>
           <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: "#2c2c2c" }}>
-                <TableCell sx={{ color: "#fff" }}>Action</TableCell>
-                <TableCell sx={{ color: "#fff" }}>ID</TableCell>
-                <TableCell sx={{ color: "#fff" }}>Date</TableCell>
-                <TableCell sx={{ color: "#fff" }}>Début</TableCell>
-                <TableCell sx={{ color: "#fff" }}>Fin</TableCell>
-                <TableCell sx={{ color: "#fff" }}>Terrain</TableCell>
-                <TableCell sx={{ color: "#fff" }}>Statut</TableCell>
-                <TableCell sx={{ color: "#fff" }}>PDF</TableCell>
+            <TableHead sx={{ backgroundColor: "#FF6B00" }}>
+              <TableRow>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Action</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Date</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Début</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Fin</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Terrain</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Statut</TableCell>
+                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Télécharger</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row, index) => (
-                <TableRow key={index} sx={{ "&:hover": { backgroundColor: "#2a2a2a" } }}>
+                <TableRow key={index} sx={{ "&:hover": { backgroundColor: "#e0f2ff" } }}>
                   <TableCell>
-                    <IconButton onClick={(e) => handleClick(e, index)} sx={{ color: "#fff" }}>
+                    <IconButton onClick={(e) => handleClick(e, index)} sx={{ color: "#003566" }}>
                       <MoreHorizIcon />
                     </IconButton>
                     <Menu
                       anchorEl={anchorEl}
                       open={open}
                       onClose={handleClose}
-                      PaperProps={{ style: { backgroundColor: "#333", color: "#fff" } }}
+                      PaperProps={{
+                        sx: { backgroundColor: "#ffffff", color: "#003566", borderRadius: 2 },
+                      }}
                     >
                       <MenuItem onClick={handleDelete}>❌ Annuler</MenuItem>
                     </Menu>
                   </TableCell>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.startTime}</TableCell>
-                  <TableCell>{row.endTime}</TableCell>
-                  <TableCell>{row.field}</TableCell>
-                  <TableCell>{row.status}</TableCell>
+                  <TableCell sx={{ color: "#003566" }}>{row.date}</TableCell>
+                  <TableCell sx={{ color: "#003566" }}>{row.startTime}</TableCell>
+                  <TableCell sx={{ color: "#003566" }}>{row.endTime}</TableCell>
+                  <TableCell sx={{ color: "#003566" }}>{row.field}</TableCell>
+                  <TableCell>
+                    {row.status === "Confirmed" ? (
+                      <Chip label="Confirmée" color="success" variant="outlined" />
+                    ) : (
+                      <Chip label="En attente" color="warning" variant="outlined" />
+                    )}
+                  </TableCell>
                   <TableCell>
                     {row.status === "Confirmed" ? (
                       <Button
                         variant="outlined"
                         size="small"
+                        sx={{
+                          color: "#FF6B00",
+                          borderColor: "#FF6B00",
+                          "&:hover": {
+                            backgroundColor: "#FF6B00",
+                            color: "#fff",
+                            borderColor: "#FF6B00",
+                          },
+                          transition: "all 0.3s ease",
+                        }}
                         onClick={() => handleDownload(row.id)}
-                        sx={{ color: "#fff", borderColor: "#4caf50" }}
                       >
                         📄 Télécharger
                       </Button>
@@ -236,5 +219,3 @@ function Session() {
     </Container>
   );
 }
-
-export default Session;

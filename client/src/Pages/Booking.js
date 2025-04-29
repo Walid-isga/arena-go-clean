@@ -5,14 +5,15 @@ import interactionPlugin from "@fullcalendar/interaction";
 import frLocale from "@fullcalendar/core/locales/fr";
 import AddBookingModal from "../Components/AddBookingModal";
 import FilterFields from "../Components/FilterFields";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { Container, Paper, Typography, Divider, CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
+import "../styles/Booking.css";
 
 // 🔵 Fonction utilitaire pour ajouter des jours
 const addDays = (date, days) => {
   const result = new Date(date);
-  result.setDate(result.getDate() + days);
+  result.setDate(date.getDate() + days);
   return result;
 };
 
@@ -27,7 +28,7 @@ export default function Booking() {
 
   const getFields = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8000/fields/");
+      const { data } = await axios.get("/fields/");
       setFields(data);
     } catch (err) {
       console.error(err);
@@ -112,7 +113,7 @@ export default function Booking() {
     return slots;
   };
 
-  const handleDateSelect = (info) => {
+  const handleDateSelect = () => {
     toast.error("❌ Merci de cliquer sur un créneau libre vert !");
   };
 
@@ -139,7 +140,7 @@ export default function Booking() {
   };
 
   const handleError = () => {
-    toast.error("❌ Erreur de réservation");
+    toast.error("❌ Erreur lors de la réservation");
   };
 
   const handleFilter = (Field) => {
@@ -160,49 +161,54 @@ export default function Booking() {
   return (
     <>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, color: "#fff" }}>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, color: "#003566" }}>
           📅 Réservations par terrain
         </Typography>
 
-        <Paper elevation={4} sx={{ p: 3, mb: 4, backgroundColor: "#1e1e1e", color: "#fff", borderRadius: 3 }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
+        <Paper elevation={4} sx={{ p: 3, mb: 4, backgroundColor: "#ffffff", borderRadius: 3 }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#003566" }}>
             🎯 Choisir un terrain
           </Typography>
-          <Divider sx={{ mb: 2, backgroundColor: "#444" }} />
+          <Divider sx={{ mb: 2, backgroundColor: "#FF6B00" }} />
           <FilterFields uniqueField={fields} onFilter={handleFilter} />
         </Paper>
 
-        <Paper elevation={4} sx={{ p: 2, backgroundColor: "#1e1e1e", borderRadius: 3, color: "#fff" }}>
+        <Paper elevation={4} sx={{ p: 2, backgroundColor: "#ffffff", borderRadius: 3 }}>
           {loading && (
             <Typography align="center" sx={{ mb: 2, color: "#4FC3F7" }}>
               Chargement des créneaux...
             </Typography>
           )}
 
-          <FullCalendar
-            plugins={[timeGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
-            editable={false}
-            selectable={true}
-            selectMirror={true}
-            events={events}
-            select={handleDateSelect}
-            eventClick={handleEventClick}
-            datesSet={handleDatesSet}
-            eventOverlap={false}
-            locale={frLocale}
-            allDaySlot={false}
-            slotMinTime="08:00:00"
-            slotMaxTime="24:00:00"
-            height={600}
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "timeGridWeek",
-            }}
-            contentHeight="auto"
-            eventContent={renderEventContent}
-          />
+            <FullCalendar
+              plugins={[timeGridPlugin, interactionPlugin]}
+              initialView="timeGridWeek"
+              editable={false}
+              selectable={true}
+              selectMirror={true}
+              events={events}
+              select={handleDateSelect}
+              eventClick={handleEventClick}
+              datesSet={handleDatesSet}
+              eventOverlap={false}
+              locale={frLocale}
+              allDaySlot={false}
+              slotMinTime="08:00:00"
+              slotMaxTime="24:00:00"
+              height={600}
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "timeGridWeek",
+              }}
+              contentHeight="auto"
+              eventContent={renderEventContent}
+              dayHeaderClassNames="calendar-header"
+              slotLabelClassNames="calendar-slot"
+              eventBackgroundColor="#f5f5f5"
+              eventBorderColor="#ccc"
+            />
+
         </Paper>
       </Container>
 
@@ -220,16 +226,12 @@ export default function Booking() {
             background-color: #f44336 !important;
             color: #fff !important;
             border-radius: 8px;
-            border-top: 5px solid #d32f2f !important;
-            animation: fadeIn 1s;
           }
 
           .event-available-morning {
             background-color: #81C784 !important;
             color: #fff !important;
             border-radius: 8px;
-            border-top: 5px solid #66BB6A !important;
-            animation: fadeIn 1s;
             cursor: pointer;
           }
 
@@ -237,14 +239,7 @@ export default function Booking() {
             background-color: #388E3C !important;
             color: #fff !important;
             border-radius: 8px;
-            border-top: 5px solid #2E7D32 !important;
-            animation: fadeIn 1s;
             cursor: pointer;
-          }
-
-          @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
           }
         `}
       </style>
@@ -252,7 +247,6 @@ export default function Booking() {
   );
 }
 
-// 🎨 Fonction pour personnaliser l'affichage des événements (affiche heure + titre)
 function renderEventContent(eventInfo) {
   return (
     <div style={{ paddingTop: "5px" }}>

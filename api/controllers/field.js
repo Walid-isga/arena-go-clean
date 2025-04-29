@@ -3,16 +3,32 @@ import Field from "../models/field.js";
 // ➡️ Créer un terrain
 export const createField = async (req, res) => {
   try {
+    console.log("➡️ req.body:", req.body);
+    console.log("➡️ req.file:", req.file);
+
     const newField = new Field({
-      ...req.body,
+      name: req.body.name,
+      sport: req.body.sport,
+      surfaceType: req.body.surfaceType,
+      city: req.body.city,
+      description: req.body.description,
+      lights: req.body.lights === "true",
+      dimensions: {
+        length: Number(req.body.length),
+        width: Number(req.body.width),
+      },
       photos: req.file ? [req.file.path] : [],
     });
+
     const savedField = await newField.save();
     res.status(201).json({ message: "Terrain créé avec succès", field: savedField });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("💥 Erreur createField :", err.message);
+    res.status(500).json({ error: "Erreur lors de la création du terrain" });
   }
 };
+
+
 
 // ➡️ Modifier un terrain
 export const updateField = async (req, res) => {
@@ -53,3 +69,27 @@ export const getAllFields = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// fieldController.js
+
+// 🔥 Nouvelle route pour chercher un terrain par sport
+
+export const getFieldsBySport = async (req, res) => {
+  const { sport } = req.query; // 🔥 récupérer le sport demandé
+
+  try {
+    // 🔥 CHERCHE le terrain correspondant au sport
+    const fields = await Field.find({ sport: { $regex: new RegExp(sport, "i") } });
+
+    if (!fields.length) {
+      return res.status(404).json({ message: "Aucun terrain trouvé pour ce sport." });
+    }
+
+    res.json(fields);
+  } catch (error) {
+    console.error("Erreur getFieldsBySport:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+  

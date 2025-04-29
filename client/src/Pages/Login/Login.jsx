@@ -12,7 +12,7 @@ import {
 import GoogleIcon from "@mui/icons-material/Google";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../axiosConfig";
 import { useAuth } from "./hooks/useAuth";
 
 export default function Login() {
@@ -21,7 +21,7 @@ export default function Login() {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8000/auth/login/success", {
+        const { data } = await axios.get("/auth/login/success", {
           withCredentials: true,
         });
 
@@ -70,7 +70,7 @@ export default function Login() {
           }}
         >
           <Typography variant="h5" fontWeight="bold" gutterBottom>
-            👋 Connexion à Sportify
+            👋 Connexion à ArenaGo
           </Typography>
           <Typography variant="body2" sx={{ color: "#aaa", mb: 2 }}>
             Connecte-toi avec Google pour continuer
@@ -104,7 +104,7 @@ export default function Login() {
         xs={false}
         md={6}
         sx={{
-          backgroundImage: "url('/images/Sportify.png')",
+          backgroundImage: "url('/images/ArenaGo.png')",
           backgroundRepeat: "no-repeat",
           backgroundSize: "contain",
           backgroundPosition: "center",

@@ -1,14 +1,25 @@
 .App {
   text-align: center;
 }
-body {
-  overflow-x: auto;
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #156D9D;
+  overflow-x: hidden;
 }
 .container {
   max-width: 100%;
   overflow-x: auto;
   display: block;
 }
+@keyframes float {
+  0% { transform: translatey(0px); }
+  50% { transform: translatey(-10px); }
+  100% { transform: translatey(0px); }
+}
+
 
 
 .App-logo {
@@ -23,7 +34,7 @@ body {
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #156D9D; /* 💙 Même fond que ArenaGo */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -32,6 +43,7 @@ body {
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
 
 .App-link {
   color: #61dafb;

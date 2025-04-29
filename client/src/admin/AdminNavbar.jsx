@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { AppBar, Toolbar, Typography, Button, Box, Badge } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import axios from "axios";
-import { toast } from "react-toastify"; // ✅ pour afficher le toast visuel
+import axios from "../axiosConfig";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 export default function AdminNavbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
   const [pendingCount, setPendingCount] = useState(0);
 
@@ -19,52 +20,66 @@ export default function AdminNavbar() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
-      const res = await axios.get("http://localhost:8000/booking/status/pending", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await axios.get("/booking/status/pending", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      const newPendingCount = res.data.length;
-
-      // ✅ Si une nouvelle réservation a été faite (nombre plus grand)
-      if (newPendingCount > pendingCount) {
-        toast.info("🔔 Nouvelle réservation reçue !");
-      }
-
-      setPendingCount(newPendingCount);
+      setPendingCount(res.data.length);
     } catch (err) {
-      console.error("Erreur récupération réservations pending", err);
+      console.error("Erreur fetch réservations", err);
     }
   };
 
   useEffect(() => {
-    fetchPendingBookings(); // au premier chargement
-
-    // ✅ puis actualiser toutes les 30 secondes
+    fetchPendingBookings();
     const interval = setInterval(fetchPendingBookings, 30000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#121212", mb: 4 }}>
+    <AppBar position="static" sx={{ backgroundColor: "#fff", boxShadow: 3 }}>
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Typography variant="h6" onClick={() => navigate("/admin")} sx={{ cursor: "pointer", fontWeight: "bold" }}>
-          🎛️ Admin - Sportify
+        <Typography variant="h6" sx={{ color: "#003566", fontWeight: "bold", cursor: "pointer" }} onClick={() => navigate("/admin")}>
+          🛡️ Admin - ArenaGo
         </Typography>
 
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Button color="inherit" onClick={() => navigate("/admin/reservations")}>
+        <Box sx={{ display: "flex", gap: 3 }}>
+          <Button
+            onClick={() => navigate("/admin/reservations")}
+            sx={{
+              color: isActive("/admin/reservations") ? "#FF6B00" : "#003566",
+              fontWeight: "bold",
+              "&:hover": { color: "#FF6B00" },
+            }}
+          >
             <Badge badgeContent={pendingCount} color="error">
+              <NotificationsIcon sx={{ mr: 1 }} />
               Réservations
             </Badge>
           </Button>
-          <Button color="inherit" onClick={() => navigate("/fields")}>
+
+          <Button
+            onClick={() => navigate("/fields")}
+            sx={{
+              color: isActive("/fields") ? "#FF6B00" : "#003566",
+              fontWeight: "bold",
+              "&:hover": { color: "#FF6B00" },
+            }}
+          >
             Terrains
           </Button>
-          <Button color="error" variant="outlined" onClick={handleLogout}>
+
+          <Button
+            variant="outlined"
+            onClick={handleLogout}
+            sx={{
+              color: "#FF6B00",
+              borderColor: "#FF6B00",
+              fontWeight: "bold",
+              "&:hover": { backgroundColor: "#ff6b0020" },
+            }}
+          >
             Déconnexion
           </Button>
         </Box>

@@ -1,9 +1,8 @@
-
 import React from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
-import pastGif from "../Assets/past.gif";
-import lazyIcon from "../Assets/lazy.gif";
+import sleepGif from "../Assets/sleep.gif";
 import GameInformation from "../Game Information/GameInformation";
+import "./LatestGames.css";
 
 export default function LatestGames({ matches }) {
   const filteredData = matches.filter(game => {
@@ -12,25 +11,22 @@ export default function LatestGames({ matches }) {
     const fullEndDate = new Date(`${dateStr}T${game.endtime}`);
     return game.status === "Confirmed" && fullEndDate < new Date();
   });
-  
 
   return (
-    <Card sx={{ backgroundColor: "#1e1e1e", color: "#fff" }}>
+    <Card className="games-card">
       <CardContent>
         <Box display="flex" alignItems="center" mb={2}>
-          <img src={pastGif} alt="icon" style={{ width: 32, marginRight: 10 }} />
-          <Typography variant="h6" color="#fff">Derniers matchs</Typography>
+          <span className="games-icon">🏁</span>
+          <Typography variant="h6" className="games-title">Derniers matchs</Typography>
         </Box>
         {filteredData.length > 0 ? (
           filteredData.map((game, i) => (
             <GameInformation key={i} game={game} />
           ))
         ) : (
-          <Box textAlign="center">
-            <img src={lazyIcon} alt="Aucun match" width={80} />
-            <Typography variant="body2" color="#bbb">
-              Aucun match terminé
-            </Typography>
+          <Box textAlign="center" mt={4}>
+            <img src={sleepGif} alt="Aucun match" width={100} />
+            <Typography variant="body2" className="games-empty-text">Aucun match terminé</Typography>
           </Box>
         )}
       </CardContent>

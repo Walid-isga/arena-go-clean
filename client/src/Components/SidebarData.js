@@ -6,16 +6,16 @@ export const SidebarData = [
   {
     title: "Accueil",
     path: "/home",
-    icon: <HomeIcon sx={{ color: "#fff" }} />,
+    icon: <HomeIcon sx={{ color: "#003566" }} />, // 🔥 Bleu ArenaGo
   },
   {
     title: "Réservation",
     path: "/booking",
-    icon: <BookmarkAddIcon sx={{ color: "#fff" }} />,
+    icon: <BookmarkAddIcon sx={{ color: "#003566" }} />, // 🔥 Bleu ArenaGo
   },
   {
     title: "Mes Sessions",
     path: "/session",
-    icon: <AssessmentIcon sx={{ color: "#fff" }} />,
+    icon: <AssessmentIcon sx={{ color: "#003566" }} />, // 🔥 Bleu ArenaGo
   },
 ];

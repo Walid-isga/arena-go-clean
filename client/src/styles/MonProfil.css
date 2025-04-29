@@ -1,0 +1,120 @@
+/* === MonProfil Style ArenaGo === */
+
+.profile-container {
+    margin-top: 80px;
+    margin-bottom: 80px;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Card principale */
+  .profile-card {
+    background-color: #ffffff !important;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 53, 102, 0.1);
+    color: #003566 !important;
+  }
+  
+  .profile-inner-card {
+    background-color: #ffffff !important;
+    box-shadow: none;
+    margin-top: 20px;
+  }
+  
+  /* Avatar */
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+    border: 3px solid #FF6B00;
+    margin: 0 auto 20px auto;
+  }
+  
+  /* Titres */
+  .profile-title {
+    color: #003566 !important;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .profile-subtitle {
+    color: #666 !important;
+    font-size: 16px;
+  }
+  
+  /* Inputs */
+  .profile-input {
+    background-color: #ffffff !important;
+  }
+  
+  .profile-input input {
+    color: #003566 !important;
+  }
+  
+  .profile-input fieldset {
+    border-color: #cccccc !important;
+  }
+  
+  .profile-input:hover fieldset {
+    border-color: #FF6B00 !important;
+    box-shadow: 0 0 5px #FF6B00;
+  }
+  
+  .profile-input.Mui-focused fieldset {
+    border-color: #FF6B00 !important;
+    box-shadow: 0 0 8px #FF6B00;
+  }
+  
+  /* Upload Button */
+  .profile-upload-btn {
+    background-color: transparent !important;
+    border: 2px dashed #003566 !important;
+    color: #003566 !important;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: all 0.3s;
+  }
+  
+  .profile-upload-btn:hover {
+    border-color: #FF6B00 !important;
+    color: #FF6B00 !important;
+  }
+  
+  /* Mettre à jour Button */
+  .profile-update-btn {
+    background-color: #FF6B00 !important;
+    color: #ffffff !important;
+    border: none;
+    padding: 12px 30px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .profile-update-btn:hover {
+    background-color: #e65c00 !important;
+    transform: scale(1.03);
+  }
+  
+  /* Texte image */
+  .profile-image-text {
+    text-align: center;
+    font-size: 14px;
+    color: #666 !important;
+    margin-top: 8px;
+  }
+  
+  /* Animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  

@@ -1,39 +1,37 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Avatar,
-  Grid,
-  Divider,
-} from "@mui/material";
-import profileGif from "../Assets/user-profile.gif";
-import defaultProfile from "../Assets/profile.gif";
+import { Avatar, Box, Typography, Paper } from "@mui/material";
+import "../Profile Information/ProfileInformation.css"; // ✅ Ton style
+
+import defaultProfile from "../Assets/profile.gif"; // Image par défaut
 
 export default function ProfileInformation({ user }) {
   if (!user) return <p>Chargement du profil...</p>;
 
-  const { username, email, picture, city, phone, isAdmin } = user;
-  const isAdminText = isAdmin ? "Oui" : "Non";
+  const { username, picture } = user;
+
+  const getPictureUrl = () => {
+    if (!picture) return defaultProfile;
+    if (typeof picture === "string" && picture.startsWith("/uploads")) {
+      return `http://localhost:8000${picture}`;
+    }
+    return picture; // Sinon c’est déjà une URL complète
+  };
 
   return (
-    <Card>
-      <CardContent>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <Avatar
-              src={picture || defaultProfile}
-              sx={{ width: 70, height: 70 }}
-            />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="h6" gutterBottom>
-            </Typography>
-            <Divider sx={{ my: 1 }} />
-            <Typography><strong>Nom :</strong> {username}</Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+    <Paper elevation={4} className="profile-card fade-in">
+      <Box textAlign="center" p={3}>
+        <Avatar
+          src={getPictureUrl()}
+          alt="Profile picture"
+          className="profile-avatar"
+        />
+        <Typography variant="h5" className="profile-username">
+          {username || "Utilisateur"}
+        </Typography>
+        <Typography variant="body2" className="profile-role">
+          Membre ArenaGo
+        </Typography>
+      </Box>
+    </Paper>
   );
 }
