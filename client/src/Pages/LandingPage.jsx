@@ -2,18 +2,25 @@ import React, { useState, useEffect } from 'react';
 import NavbarLanding from '../Components/NavbarLanding';
 import FooterLanding from '../Components/FooterLanding';
 import '../Assets/Landing.css';
-import axios from 'axios';
+import axios from '../axiosConfig'; // ✅ utilise la config avec baseURL dynamique
 
 export default function LandingPage() {
   const [fields, setFields] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFields = async () => {
       try {
         const res = await axios.get('/fields');
-        setFields(res.data);
+        const data = res.data;
+
+        // ✅ Sécurité : si data n’est pas un tableau, on ignore
+        setFields(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Erreur récupération terrains :", err);
+        console.error("Erreur récupération terrains :", err.message);
+        setFields([]); // fallback vide en cas d’erreur
+      } finally {
+        setLoading(false);
       }
     };
     fetchFields();
@@ -52,10 +59,12 @@ export default function LandingPage() {
       <section id="events" className="events-section">
         <h2>Nos Événements Sportifs</h2>
         <div className="events-grid">
-          {fields.length > 0 ? (
+          {loading ? (
+            <p>Chargement des terrains...</p>
+          ) : fields.length > 0 ? (
             fields.map((field) => (
               <div key={field._id} className="event-card">
-                {field.photos && field.photos.length > 0 ? (
+                {field.photos?.length > 0 ? (
                   <img
                     src={`/${field.photos[0]}`}
                     alt={field.name}
@@ -69,7 +78,7 @@ export default function LandingPage() {
               </div>
             ))
           ) : (
-            <p>Chargement des terrains...</p>
+            <p>Aucun terrain disponible pour le moment.</p>
           )}
         </div>
       </section>
