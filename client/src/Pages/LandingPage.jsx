@@ -66,7 +66,7 @@ export default function LandingPage() {
               <div key={field._id} className="event-card">
                 {field.photos?.length > 0 ? (
                   <img
-                    src={`/${field.photos[0]}`}
+                    src={`https://arena-go-clean-production.up.railway.app/uploads/${field.photos[0]}`}
                     alt={field.name}
                     className="event-image"
                   />

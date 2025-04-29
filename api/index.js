@@ -43,8 +43,8 @@ app.use(
     name: "session",
     keys: ["cyberwolve"],
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: "lax",
-    secure: false, // ✅ tu peux mettre true si tu forces HTTPS partout
+    sameSite: "none",
+    secure: true,
   })
 );
 
@@ -73,6 +73,12 @@ app.use(
 
 // ✅ Body Parser
 app.use(express.json());
+
+app.use(cors({
+  origin: "https://arenago.vercel.app",
+  credentials: true,
+}));
+
 
 // ✅ Routes
 app.use("/users", userRoutes);
