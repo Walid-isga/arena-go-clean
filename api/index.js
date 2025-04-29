@@ -38,15 +38,16 @@ const connect = async () => {
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ Cookie Session sécurisée
-const isProduction = true;
+const isProduction = process.env.NODE_ENV === "production";
 
+app.set("trust proxy", 1);
 app.use(
   cookieSession({
     name: "session",
     keys: ["cyberwolve"],
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: isProduction ? "none" : "lax", // 🔥 none en prod pour autoriser cross-site cookies
-    secure: isProduction,                   // 🔥 cookies sécurisés seulement en prod
+    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction, // doit être true si Vercel (HTTPS)
   })
 );
 
@@ -56,21 +57,22 @@ app.use(passport.session());
 
 // ✅ CORS pour autoriser localhost + Vercel
 const allowedOrigins = [
-  "http://localhost:3000",                  // pour dev local
-  "https://arenago.vercel.app",              // ton site Vercel
-  "https://ton-autre-url.vercel.app",        // (si tu as une autre URL de test)
+  "https://arenago.vercel.app",
+  "http://localhost:3000"
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // ✅ Body Parser (important après CORS)
 app.use(express.json());
