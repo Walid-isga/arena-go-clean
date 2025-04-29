@@ -38,7 +38,7 @@ const connect = async () => {
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ Cookie Session sécurisée
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = true;
 
 app.use(
   cookieSession({
