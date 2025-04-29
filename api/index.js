@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
-import passport from "passport";
 import cookieSession from "cookie-session";
+import passport from "passport";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -17,14 +17,14 @@ import chatbotRoutes from './routes/chatbotRoutes.js';
 import adminRoutes from "./routes/admin.js";
 import contactRoutes from './routes/contact.js';
 
-const app = express();
 dotenv.config();
-const PORT = process.env.PORT || 8000; // ✅ Railway donne son propre port en prod
+const app = express();
+const PORT = process.env.PORT || 8000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ MongoDB connection
+// ✅ Connexion MongoDB
 const connect = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -34,31 +34,31 @@ const connect = async () => {
   }
 };
 
-// ✅ Middleware pour rendre 'uploads' public
+// ✅ Middleware pour servir 'uploads' en public
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ Cookie Session sécurisée
+// ✅ Cookie Session Configuration
 const isProduction = process.env.NODE_ENV === "production";
 
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // Important pour Railway / Vercel
 app.use(
   cookieSession({
     name: "session",
-    keys: ["cyberwolve"],
-    maxAge: 24 * 60 * 60 * 1000,
+    keys: [process.env.COOKIE_SECRET],
+    maxAge: 24 * 60 * 60 * 1000, // 1 jour
     sameSite: isProduction ? "none" : "lax",
-    secure: isProduction, // doit être true si Vercel (HTTPS)
+    secure: isProduction, // true en production (HTTPS)
   })
 );
 
-// ✅ Passport
+// ✅ Passport (si tu l'utilises encore)
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ CORS pour autoriser localhost + Vercel
+// ✅ CORS avec credentials
 const allowedOrigins = [
   "https://arenago.vercel.app",
-  "http://localhost:3000"
+  "http://localhost:3000",
 ];
 
 app.use(
@@ -74,12 +74,12 @@ app.use(
   })
 );
 
-// ✅ Body Parser (important après CORS)
+// ✅ Body Parser
 app.use(express.json());
 
 // ✅ Routes
 app.use("/auth", authrouter);
-app.use("/users", userRoutes); // ✅ pas 2x "users" comme avant
+app.use("/users", userRoutes);
 app.use("/fields", fieldsrouter);
 app.use("/booking", bookingrouter);
 app.use("/api/stats", statsRoutes);
@@ -87,7 +87,7 @@ app.use("/admin", adminRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/contact", contactRoutes);
 
-// ✅ Lancement du serveur
+// ✅ Serveur
 app.listen(PORT, () => {
   connect();
   console.log(`🚀 Server running on port ${PORT}`);
