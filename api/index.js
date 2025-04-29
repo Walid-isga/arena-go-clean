@@ -37,29 +37,44 @@ const connect = async () => {
 // ✅ Middleware pour rendre 'uploads' public
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use("/api/chatbot", chatbotRoutes);
+// ✅ Cookie Session
 app.use(
   cookieSession({
     name: "session",
     keys: ["cyberwolve"],
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: "lax",
-    secure: false,
+    secure: false, // ✅ tu peux mettre true si tu forces HTTPS partout
   })
 );
 
+// ✅ Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
+// ✅ CORS : autorise localhost et Vercel
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://arenago.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 
+// ✅ Body Parser
 app.use(express.json());
 
+// ✅ Routes
 app.use("/users", userRoutes);
 app.use("/auth", authrouter);
 app.use("/users", usersrouter);
@@ -67,9 +82,10 @@ app.use("/fields", fieldsrouter);
 app.use("/booking", bookingrouter);
 app.use("/api/stats", statsRoutes);
 app.use("/admin", adminRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/contact', contactRoutes);
 
-
+// ✅ Lancement du serveur
 app.listen(PORT, () => {
   connect();
   console.log(`🚀 Server running on http://localhost:${PORT}`);
