@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
+import axios from "../axiosConfig";
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +25,7 @@ export default function ChatBot() {
   const [waitingConfirmation, setWaitingConfirmation] = useState(false);
   const chatEndRef = useRef(null);
 
-  const API_URL_AI = "http://localhost:5001/chat";
+  const API_URL_AI = process.env.REACT_APP_AI_URL;
 
   const corrections = {
     "réeservation": "réservation",
@@ -37,7 +38,6 @@ export default function ChatBot() {
     "statu": "statut",
     "statut de reservation": "statut réservation",
     "resérvation": "réservation",
-    // Ajoute ici d'autres fautes courantes si tu veux
   };
 
   const autocorrectInput = (input) => {
@@ -81,33 +81,25 @@ export default function ChatBot() {
     const statutReservationPattern = /(statut|vérifier).*(réservation)/;
     const reserverPattern = /(réserver|terrain)/;
 
-    if (waitingConfirmation) {
-      handleBookingConfirmation(lowerInput);
-    } else if (isBooking) {
-      await handleBookingConversation(lowerInput);
-    }
-    else if (annulerPattern.test(lowerInput) && reservationPattern.test(lowerInput) && reservationId) {
-      try {
-        const response = await fetch(`http://localhost:8000/booking/${reservationId}`, {
-          method: "DELETE",
+    try {
+      if (waitingConfirmation) {
+        handleBookingConfirmation(lowerInput);
+      } else if (isBooking) {
+        await handleBookingConversation(lowerInput);
+      } else if (annulerPattern.test(lowerInput) && reservationPattern.test(lowerInput) && reservationId) {
+        const response = await axios.delete(`/booking/${reservationId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (response.ok) {
+        if (response.status === 200) {
           setMessages((prev) => [...prev, { sender: "bot", text: "✅ Réservation annulée avec succès." }]);
         } else {
           setMessages((prev) => [...prev, { sender: "bot", text: "❌ Échec de l'annulation de la réservation." }]);
         }
-      } catch (error) {
-        console.error("Erreur annulation :", error);
-        setMessages((prev) => [...prev, { sender: "bot", text: "🚫 Erreur serveur lors de l'annulation." }]);
-      }
-    }
-    else if (mesReservationsPattern.test(lowerInput)) {
-      try {
-        const response = await fetch(`http://localhost:8000/booking/user/${userId}`, {
+      } else if (mesReservationsPattern.test(lowerInput)) {
+        const response = await axios.get(`/booking/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const reservations = await response.json();
+        const reservations = response.data;
         if (reservations.length === 0) {
           setMessages((prev) => [...prev, { sender: "bot", text: "📭 Vous n'avez aucune réservation." }]);
         } else {
@@ -119,37 +111,25 @@ export default function ChatBot() {
             .join("\n\n");
           setMessages((prev) => [...prev, { sender: "bot", text: `📋 Vos réservations:\n\n${reservationList}` }]);
         }
-      } catch (error) {
-        console.error("Erreur reservations:", error);
-        setMessages((prev) => [...prev, { sender: "bot", text: "🚫 Erreur serveur lors de la récupération des réservations." }]);
-      }
-    }
-    else if (statutReservationPattern.test(lowerInput) && reservationId) {
-      try {
-        const response = await fetch(`http://localhost:8000/booking/${reservationId}`, {
+      } else if (statutReservationPattern.test(lowerInput) && reservationId) {
+        const response = await axios.get(`/booking/${reservationId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (response.ok) {
-          const reservation = await response.json();
-          setMessages((prev) => [...prev, {
-            sender: "bot",
-            text: `📄 Détails de la réservation:\n🆔 ID: ${reservation._id}\n📅 Date: ${reservation.date}\n⏰ Heure: ${reservation.starttime} - ${reservation.endtime}\n🏟️ Terrain: ${reservation.field.name}\n📌 Statut: ${reservation.status}`,
-          }]);
-        } else {
-          setMessages((prev) => [...prev, { sender: "bot", text: "❌ Réservation non trouvée." }]);
-        }
-      } catch (error) {
-        console.error("Erreur statut:", error);
-        setMessages((prev) => [...prev, { sender: "bot", text: "🚫 Erreur serveur lors de la récupération du statut." }]);
+        const reservation = response.data;
+        setMessages((prev) => [...prev, {
+          sender: "bot",
+          text: `📄 Détails de la réservation:\n🆔 ID: ${reservation._id}\n📅 Date: ${reservation.date}\n⏰ Heure: ${reservation.starttime} - ${reservation.endtime}\n🏟️ Terrain: ${reservation.field.name}\n📌 Statut: ${reservation.status}`,
+        }]);
+      } else if (reserverPattern.test(lowerInput)) {
+        setIsBooking(true);
+        await loadFields();
+        setCurrentStep("terrain");
+      } else {
+        await sendToAI(input);
       }
-    }
-    else if (reserverPattern.test(lowerInput)) {
-      setIsBooking(true);
-      await loadFields();
-      setCurrentStep("terrain");
-    }
-    else {
-      await sendToAI(input);
+    } catch (error) {
+      console.error("Erreur chatbot:", error);
+      setMessages((prev) => [...prev, { sender: "bot", text: "🚫 Erreur serveur." }]);
     }
 
     setInput("");
@@ -157,12 +137,9 @@ export default function ChatBot() {
 
   const loadFields = async () => {
     try {
-      const response = await fetch("http://localhost:8000/fields");
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setAvailableFields(data);
-        setMessages((prev) => [...prev, { sender: "bot", text: "🏟️ Choisis ton terrain :" }]);
-      }
+      const res = await axios.get("/fields");
+      setAvailableFields(res.data);
+      setMessages((prev) => [...prev, { sender: "bot", text: "🏟️ Choisis ton terrain :" }]);
     } catch (error) {
       console.error("Erreur terrains:", error);
       setMessages((prev) => [...prev, { sender: "bot", text: "❌ Erreur lors du chargement des terrains." }]);
@@ -170,9 +147,8 @@ export default function ChatBot() {
   };
 
   const handleBookingConversation = async (input) => {
-    if (currentStep === "terrain") {
-      // attendre clic
-    } else if (currentStep === "date") {
+    if (currentStep === "terrain") return;
+    else if (currentStep === "date") {
       setPendingBooking((prev) => ({ ...prev, date: input }));
       setCurrentStep("time");
       setMessages((prev) => [...prev, { sender: "bot", text: "⏰ À quelle heure ? (ex: 14:00)" }]);
@@ -236,29 +212,19 @@ export default function ChatBot() {
       const token = localStorage.getItem("token");
       const decoded = jwtDecode(token);
       const userId = decoded.id;
-      const res = await fetch("http://localhost:8000/booking", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          field: bookingData.terrainId,
-          user: userId,
-          date: bookingData.date,
-          starttime: bookingData.time,
-          endtime: addOneHour(bookingData.time),
-          status: "Pending",
-          teamName: bookingData.teamName,
-          players: bookingData.players,
-        }),
+      const res = await axios.post("/booking", {
+        field: bookingData.terrainId,
+        user: userId,
+        date: bookingData.date,
+        starttime: bookingData.time,
+        endtime: addOneHour(bookingData.time),
+        status: "Pending",
+        teamName: bookingData.teamName,
+        players: bookingData.players,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const result = await res.json();
-      if (res.ok) {
-        setMessages((prev) => [...prev, { sender: "bot", text: "🎉 Réservation faite avec succès !" }]);
-      } else {
-        setMessages((prev) => [...prev, { sender: "bot", text: `❌ ${result.message}` }]);
-      }
+      setMessages((prev) => [...prev, { sender: "bot", text: "🎉 Réservation faite avec succès !" }]);
     } catch (error) {
       console.error("Erreur booking:", error);
       setMessages((prev) => [...prev, { sender: "bot", text: "🚫 Erreur serveur." }]);
@@ -282,11 +248,12 @@ export default function ChatBot() {
       setMessages((prev) => [...prev, { sender: "bot", text: data.reply || "🤖 Je n'ai pas compris." }]);
     } catch (error) {
       console.error("Erreur AI:", error);
-      setMessages((prev) => [...prev, { sender: "bot", text: "🚫 Erreur serveur." }]);
+      setMessages((prev) => [...prev, { sender: "bot", text: "🚫 Erreur serveur IA." }]);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <>

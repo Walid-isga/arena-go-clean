@@ -1,10 +1,8 @@
-// client/src/axiosConfig.js
 import axios from "axios";
-import { API_URL } from "./api"; // api.js contient l'URL dynamique
 
 const instance = axios.create({
-  baseURL: API_URL,
-  withCredentials: true, // utile si tu utilises les cookies pour les sessions
+  baseURL: process.env.REACT_APP_API_URL, // ex: https://arena-go-clean-production.up.railway.app
+  withCredentials: true,
 });
 
 export default instance;
