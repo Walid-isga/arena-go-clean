@@ -10,15 +10,22 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return setLoading(false);
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const res = await axios.get("/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
+
         setUser(res.data);
       } catch (err) {
-        console.error("Erreur AuthContext :", err);
+        console.error("❌ AuthContext error:", err);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -27,7 +34,12 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axios.get("/auth/logout");
+    } catch (err) {
+      console.error("❌ Erreur logout :", err);
+    }
     localStorage.removeItem("token");
     setUser(null);
   };

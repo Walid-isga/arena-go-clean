@@ -1,9 +1,9 @@
+// axiosConfig.js
 import axios from "axios";
-import { API_URL } from "./api";
 
 const instance = axios.create({
-  baseURL: API_URL,
-  withCredentials: true, // ✅ obligatoire pour autoriser le cookie cross-domain
+  baseURL: "https://arena-go-clean-production.up.railway.app", // ⬅️ change selon ton backend Railway
+  withCredentials: true, // ⬅️ pour que le cookie session soit envoyé
 });
 
 export default instance;

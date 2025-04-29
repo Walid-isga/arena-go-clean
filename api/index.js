@@ -40,20 +40,29 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ✅ Cookie Session Configuration
 const isProduction = process.env.NODE_ENV === "production";
 
-app.set("trust proxy", 1); // Important pour Railway / Vercel
+app.set("trust proxy", 1); // ⬅️ Obligatoire Railway/Vercel
+
 app.use(
   cookieSession({
     name: "session",
     keys: [process.env.COOKIE_SECRET],
-    maxAge: 24 * 60 * 60 * 1000, // 1 jour
+    maxAge: 24 * 60 * 60 * 1000,
     sameSite: isProduction ? "none" : "lax",
-    secure: isProduction, // true en production (HTTPS)
+    secure: isProduction,
   })
 );
 
-// ✅ Passport (si tu l'utilises encore)
+app.use(
+  cors({
+    origin: ["https://arenago.vercel.app", "http://localhost:3000"],
+    credentials: true,
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.json());
+
 
 // ✅ CORS avec credentials
 const allowedOrigins = [
@@ -61,18 +70,6 @@ const allowedOrigins = [
   "http://localhost:3000",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
 
 // ✅ Body Parser
 app.use(express.json());

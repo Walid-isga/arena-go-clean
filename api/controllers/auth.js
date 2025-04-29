@@ -83,24 +83,20 @@ export const loginWithEmailController = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "Utilisateur introuvable." });
-
-    if (!user.isVerified) {
-      return res.status(403).json({ message: "Veuillez vérifier votre compte par OTP." });
-    }
+    if (!user.isVerified) return res.status(403).json({ message: "Veuillez vérifier votre compte par OTP." });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Mot de passe incorrect." });
 
-    // ✅ Générer un Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "2h" });
 
-    // ✅ Stocker dans la session
+    // Enregistrement dans session (cookie-session)
     req.session.user = {
       id: user._id,
       email: user.email,
     };
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Connexion réussie",
       user: {
         _id: user._id,
@@ -114,9 +110,10 @@ export const loginWithEmailController = async (req, res) => {
       token,
     });
   } catch (err) {
-    res.status(500).json({ message: "Erreur serveur lors de la connexion." });
+    return res.status(500).json({ message: "Erreur serveur lors de la connexion." });
   }
 };
+
 
 // ✅ DÉCONNEXION
 export const logoutController = async (req, res) => {
