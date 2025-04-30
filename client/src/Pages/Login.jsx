@@ -25,14 +25,16 @@ export default function Login() {
     try {
       const res = await axios.post("/auth/login", formData);
       const { token, user } = res.data;
-
+  
       if (!token || !user) {
         toast.error("❌ Identifiants incorrects ou utilisateur non vérifié.");
         return;
       }
-
+  
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user)); // 🟢 AJOUT CRUCIAL
       setUser(user);
+  
       toast.success("✅ Connexion réussie !");
       if (user.isAdmin) {
         navigate("/admin");
@@ -43,6 +45,7 @@ export default function Login() {
       toast.error(err.response?.data?.message || "❌ Erreur lors de la connexion.");
     }
   };
+  
 
   return (
     <Grid container sx={{ height: "100vh", width: "100%", margin: 0 }}>
