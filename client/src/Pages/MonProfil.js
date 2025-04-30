@@ -15,6 +15,7 @@ import {
 import axios from "../axiosConfig";
 import { toast } from "react-toastify";
 import "../styles/MonProfil.css"; // 🔥 Import du style spécial
+import { getImageUrl } from "../utils/getImageUrl"; // en haut du fichier
 
 export default function MonProfil() {
   const [user, setUser] = useState(null);
@@ -114,16 +115,19 @@ export default function MonProfil() {
     }
   };
 
+
+
   const getPictureUrl = () => {
     if (!form.picture) return null;
     if (form.picture instanceof File) {
       return URL.createObjectURL(form.picture);
     }
-    if (typeof form.picture === "string" && form.picture.startsWith("/uploads")) {
-      return form.picture;
+    if (typeof form.picture === "string") {
+      return getImageUrl(form.picture.replace("/uploads/", ""));
     }
-    return form.picture;
+    return null;
   };
+  
 
   if (!user) {
     return (

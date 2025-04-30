@@ -3,6 +3,7 @@ import { Avatar, Box, Typography, Paper } from "@mui/material";
 import "../Profile Information/ProfileInformation.css"; // ✅ Ton style
 
 import defaultProfile from "../Assets/profile.gif"; // Image par défaut
+import { getImageUrl } from "../../../utils/getImageUrl"; // adapte le chemin si besoin
 
 export default function ProfileInformation({ user }) {
   if (!user) return <p>Chargement du profil...</p>;
@@ -11,11 +12,12 @@ export default function ProfileInformation({ user }) {
 
   const getPictureUrl = () => {
     if (!picture) return defaultProfile;
-    if (typeof picture === "string" && picture.startsWith("/uploads")) {
-      return `${picture}`;
+    if (typeof picture === "string") {
+      return getImageUrl(picture.replace("/uploads/", ""));
     }
-    return picture; // Sinon c’est déjà une URL complète
+    return picture;
   };
+  
 
   return (
     <Paper elevation={4} className="profile-card fade-in">

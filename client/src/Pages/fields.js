@@ -13,6 +13,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
 import AdminNavbar from "../admin/AdminNavbar"; // ✅ Import AdminNavbar
+import { getImageUrl } from "../utils/getImageUrl";
 
 export default function Fields() {
   const [fields, setFields] = useState([]);
@@ -85,7 +86,7 @@ export default function Fields() {
   <CardMedia
     component="img"
     height="200"
-    image={`/${field.photos[0]}`}
+    image={getImageUrl(field.photos[0])}
     alt={field.name}
     sx={{
       transition: "transform 0.8s",

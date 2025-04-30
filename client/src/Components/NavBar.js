@@ -1,353 +1,203 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { SidebarData } from "./SidebarData";
 import {
-  Avatar,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
   Menu,
   MenuItem,
-  ListItemIcon,
-  Divider,
-  Badge,
-  Box,
-  Typography,
+  Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
+  Divider,
+  Avatar,
+  Box,
+  Badge,
+  useMediaQuery,
 } from "@mui/material";
-import { toast } from "react-toastify";
-import axios from "../axiosConfig";
-
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import { useTheme } from "@mui/material/styles";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "../axiosConfig";
+import { SidebarData } from "./SidebarData";
+import { getImageUrl } from "../utils/getImageUrl";
 
 export default function NavBar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const [pendingCount, setPendingCount] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const fetchPendingBookings = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const res = await axios.get("/booking/status/pending", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setPendingCount(res.data.length);
-    } catch (err) {
-      console.error("Erreur fetch pending bookings", err);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    toast.success("✅ Déconnecté !");
-    navigate("/login");
-    handleClose();
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const avatarMenuOpen = Boolean(anchorEl);
 
   useEffect(() => {
-    if (user && user.isAdmin) {
-      fetchPendingBookings();
+    const fetchPending = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await axios.get("/booking/status/pending", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPendingCount(res.data.length);
+      } catch (err) {
+        console.error("Erreur chargement réservations", err);
+      }
+    };
+
+    if (user?.isAdmin) {
+      fetchPending();
     }
   }, [location, user]);
 
   if (!user) return null;
 
   const getPictureUrl = () => {
-    if (!user || !user.picture) return null;
-    if (typeof user.picture === "string" && user.picture.startsWith("/uploads")) {
-      return `${user.picture}`;
+    if (!user.picture) return null;
+    if (typeof user.picture === "string") {
+      return getImageUrl(user.picture.replace("/uploads/", ""));
     }
     return user.picture;
   };
   
 
+  const handleLogout = () => {
+    logout();
+    toast.success("✅ Déconnecté !");
+    navigate("/login");
+    handleCloseAvatarMenu();
+  };
+
+  const handleOpenAvatarMenu = (e) => setAnchorEl(e.currentTarget);
+  const handleCloseAvatarMenu = () => setAnchorEl(null);
+
+  const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
+
+  const links = [
+    ...SidebarData,
+    { title: "Terrains", path: "/fields", icon: <SportsSoccerIcon /> },
+  ];
+
+  if (user?.isAdmin) {
+    links.push({
+      title: `Réservations (${pendingCount})`,
+      path: "/admin/reservations",
+      icon: (
+        <Badge badgeContent={pendingCount} color="error">
+          <NotificationsIcon />
+        </Badge>
+      ),
+    });
+  }
+
   return (
-    <Box
-      sx={{
-        width: "100%",
-        backgroundColor: "#ffffff",
-        color: "#003566",
-        px: 3,
-        py: 2,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        borderBottom: "1px solid #e0e0e0",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-      }}
-    >
-      {/* Logo ArenaGo */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+    <AppBar position="static" sx={{ backgroundColor: "#fff", color: "#003566" }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        {/* Logo */}
         <Typography
           variant="h6"
-          sx={{
-            fontWeight: "bold",
-            fontFamily: "Poppins, sans-serif",
-            cursor: "pointer",
-            fontSize: "1.8rem",
-            color: "#003566",
-            position: "relative",
-            "&:hover": {
-              color: "#FF6B00",
-              transition: "0.3s",
-            },
-            "&::after": {
-              content: "''",
-              position: "absolute",
-              width: "0",
-              height: "3px",
-              bottom: 0,
-              left: 0,
-              backgroundColor: "#FF6B00",
-              transition: "width 0.3s",
-            },
-            "&:hover::after": {
-              width: "100%",
-            },
-          }}
+          sx={{ fontWeight: "bold", cursor: "pointer" }}
           onClick={() => navigate("/home")}
         >
           ArenaGo
         </Typography>
-      </Box>
 
-      {/* Liens Navigation */}
-      <List sx={{ display: "flex", gap: 2 }}>
-        {SidebarData.map((item, index) => (
-          <ListItem disablePadding key={index}>
-            <ListItemButton
-              component={Link}
-              to={item.path}
-              sx={{
-                borderRadius: "10px",
-                transition: "all 0.3s",
-                "&:hover": {
-                  backgroundColor: "#f0f0f0",
-                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              {item.icon}
-              <ListItemText
-                primary={item.title}
-                primaryTypographyProps={{
-                  sx: {
-                    ml: 1,
-                    color: "#003566",
-                    fontWeight: "bold",
-                    fontFamily: "Poppins, sans-serif",
-                    fontSize: "1rem",
-                    position: "relative",
-                    transition: "color 0.3s",
-                    "&:hover": {
-                      color: "#FF6B00",
-                    },
-                    "&::after": {
-                      content: "''",
-                      position: "absolute",
-                      width: "0",
-                      height: "2px",
-                      bottom: -3,
-                      left: 0,
-                      backgroundColor: "#FF6B00",
-                      transition: "width 0.3s",
-                    },
-                    "&:hover::after": {
-                      width: "100%",
-                    },
-                  },
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-
-        {/* Bouton Terrains */}
-        <ListItem disablePadding>
-          <ListItemButton
-            component={Link}
-            to="/fields"
-            sx={{
-              borderRadius: "10px",
-              transition: "all 0.3s",
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-                boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-                transform: "scale(1.05)",
-              },
-            }}
-          >
-            <SportsSoccerIcon sx={{ color: "#003566" }} />
-            <ListItemText
-              primary="Terrains"
-              primaryTypographyProps={{
-                sx: {
-                  ml: 1,
+        {/* Desktop Links */}
+        {!isMobile && (
+          <Box sx={{ display: "flex", gap: 3 }}>
+            {links.map((item, i) => (
+              <Link
+                key={i}
+                to={item.path}
+                style={{
+                  textDecoration: "none",
                   color: "#003566",
                   fontWeight: "bold",
-                  fontFamily: "Poppins, sans-serif",
-                  fontSize: "1rem",
-                  position: "relative",
-                  transition: "color 0.3s",
-                  "&:hover": {
-                    color: "#FF6B00",
-                  },
-                  "&::after": {
-                    content: "''",
-                    position: "absolute",
-                    width: "0",
-                    height: "2px",
-                    bottom: -3,
-                    left: 0,
-                    backgroundColor: "#FF6B00",
-                    transition: "width 0.3s",
-                  },
-                  "&:hover::after": {
-                    width: "100%",
-                  },
-                },
-              }}
-            />
-          </ListItemButton>
-        </ListItem>
-
-        {/* Bouton Réservations (admin seulement) */}
-        {user.isAdmin && (
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={() => navigate("/admin/reservations")}
-              sx={{
-                borderRadius: "10px",
-                transition: "all 0.3s",
-                "&:hover": {
-                  backgroundColor: "#f0f0f0",
-                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              <Badge badgeContent={pendingCount} color="error">
-                <NotificationsIcon sx={{ color: "#003566" }} />
-              </Badge>
-              <ListItemText
-                primary="Réservations"
-                primaryTypographyProps={{
-                  sx: {
-                    ml: 1,
-                    color: "#003566",
-                    fontWeight: "bold",
-                    fontFamily: "Poppins, sans-serif",
-                    fontSize: "1rem",
-                    position: "relative",
-                    transition: "color 0.3s",
-                    "&:hover": {
-                      color: "#FF6B00",
-                    },
-                    "&::after": {
-                      content: "''",
-                      position: "absolute",
-                      width: "0",
-                      height: "2px",
-                      bottom: -3,
-                      left: 0,
-                      backgroundColor: "#FF6B00",
-                      transition: "width 0.3s",
-                    },
-                    "&:hover::after": {
-                      width: "100%",
-                    },
-                  },
+                  fontFamily: "Poppins",
                 }}
-              />
-            </ListItemButton>
-          </ListItem>
+              >
+                {item.title}
+              </Link>
+            ))}
+          </Box>
         )}
-      </List>
 
-      {/* Avatar utilisateur */}
-      <Box>
-        <Avatar
-          src={getPictureUrl()}
-          alt={user.username}
-          onClick={handleClick}
-          sx={{
-            width: 40,
-            height: 40,
-            cursor: "pointer",
-            border: "2px solid #5BB0D8",
-            transition: "0.3s",
-            "&:hover": {
-              transform: "scale(1.1)",
-            },
-          }}
-        />
+        {/* Avatar + Burger */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {isMobile && (
+            <IconButton onClick={handleDrawerToggle}>
+              <MenuIcon />
+            </IconButton>
+          )}
+          <Avatar
+            src={getPictureUrl()}
+            alt={user.username}
+            onClick={handleOpenAvatarMenu}
+            sx={{
+              width: 40,
+              height: 40,
+              cursor: "pointer",
+              border: "2px solid #5BB0D8",
+              transition: "0.3s",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+        </Box>
+
+        {/* Menu Avatar */}
         <Menu
           anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
+          open={avatarMenuOpen}
+          onClose={handleCloseAvatarMenu}
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
-          PaperProps={{
-            sx: {
-              backgroundColor: "#ffffff",
-              color: "#003566",
-              borderRadius: 2,
-              boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
-            },
-          }}
         >
           <MenuItem
-            onClick={() => { navigate("/profile"); handleClose(); }}
-            sx={{
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-                color: "#FF6B00",
-              },
+            onClick={() => {
+              navigate("/monprofil");
+              handleCloseAvatarMenu();
             }}
           >
-            <ListItemIcon>
-              <AccountCircleIcon sx={{ color: "#FF6B00" }} />
-            </ListItemIcon>
+            <AccountCircleIcon sx={{ mr: 1 }} />
             Mon Profil
           </MenuItem>
-          <Divider sx={{ backgroundColor: "#e0e0e0" }} />
-          <MenuItem
-            onClick={handleLogout}
-            sx={{
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "#f0f0f0",
-                color: "#FF6B00",
-              },
-            }}
-          >
-            <ListItemIcon>
-              <LogoutIcon sx={{ color: "#f44336" }} />
-            </ListItemIcon>
+          <Divider />
+          <MenuItem onClick={handleLogout}>
+            <LogoutIcon sx={{ mr: 1 }} />
             Déconnexion
           </MenuItem>
         </Menu>
-      </Box>
-    </Box>
+      </Toolbar>
+
+      {/* Drawer Mobile */}
+      <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
+        <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
+          <List>
+            {links.map((item, i) => (
+              <ListItem key={i} disablePadding>
+                <ListItemButton component={Link} to={item.path}>
+                  {item.icon}
+                  <ListItemText sx={{ ml: 1 }} primary={item.title} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+    </AppBar>
   );
 }

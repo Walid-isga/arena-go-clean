@@ -3,6 +3,7 @@ import NavbarLanding from '../Components/NavbarLanding';
 import FooterLanding from '../Components/FooterLanding';
 import '../Assets/Landing.css';
 import axios from '../axiosConfig'; // ✅ utilise la config avec baseURL dynamique
+import { getImageUrl } from "../utils/getImageUrl";
 
 export default function LandingPage() {
   const [fields, setFields] = useState([]);
@@ -66,10 +67,11 @@ export default function LandingPage() {
               <div key={field._id} className="event-card">
                 {field.photos?.length > 0 ? (
                   <img
-                    src={`https://arena-go-clean-production.up.railway.app/uploads/${field.photos[0]}`}
+                    src={getImageUrl(field.photos[0])}
                     alt={field.name}
                     className="event-image"
                   />
+
                 ) : (
                   <div className="no-image">Pas d'image</div>
                 )}
