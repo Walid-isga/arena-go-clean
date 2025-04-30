@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
+
       if (!token) {
         setLoading(false);
         return;
@@ -26,9 +27,9 @@ export const AuthProvider = ({ children }) => {
         });
 
         setUser(res.data);
-        localStorage.setItem("user", JSON.stringify(res.data)); // ✅ persist user
+        localStorage.setItem("user", JSON.stringify(res.data));
       } catch (err) {
-        console.error("❌ /users/me error:", err);
+        console.error("❌ /users/me:", err.response?.data || err.message);
         setUser(null);
         localStorage.removeItem("user");
       } finally {
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         },
       });
     } catch (err) {
-      console.error("❌ logout error:", err);
+      console.error("❌ logout error:", err.message);
     }
 
     localStorage.removeItem("token");

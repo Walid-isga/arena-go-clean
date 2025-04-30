@@ -8,13 +8,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import authrouter from "./routes/auth.js";
-import usersrouter from "./routes/users.js";
+import usersrouter from "./routes/user.js";
 import fieldsrouter from "./routes/fields.js";
 import bookingrouter from "./routes/booking.js";
 import statsRoutes from "./routes/stats.js";
-import userRoutes from "./routes/user.js";
-import chatbotRoutes from './routes/chatbotRoutes.js';
 import adminRoutes from "./routes/admin.js";
+import chatbotRoutes from './routes/chatbotRoutes.js';
 import contactRoutes from './routes/contact.js';
 
 dotenv.config();
@@ -24,7 +23,44 @@ const PORT = process.env.PORT || 8000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Connexion MongoDB
+app.set("trust proxy", 1); // ✅ Obligatoire en production
+
+// ✅ Middleware express & CORS
+app.use(express.json());
+
+app.use(cors({
+  origin: ["https://arenago.vercel.app", "http://localhost:3000"],
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+app.use(
+  cookieSession({
+    name: "session",
+    keys: [process.env.COOKIE_SECRET],
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// ✅ Routes
+app.use("/auth", authrouter);
+app.use("/users", usersrouter);
+app.use("/fields", fieldsrouter);
+app.use("/booking", bookingrouter);
+app.use("/api/stats", statsRoutes);
+app.use("/admin", adminRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/contact", contactRoutes);
+
+// ✅ MongoDB
 const connect = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -34,58 +70,6 @@ const connect = async () => {
   }
 };
 
-// ✅ Middleware pour servir 'uploads' en public
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// ✅ Cookie Session Configuration
-const isProduction = process.env.NODE_ENV === "production";
-
-app.set("trust proxy", 1); // ⬅️ Obligatoire Railway/Vercel
-
-app.use(
-  cookieSession({
-    name: "session",
-    keys: [process.env.COOKIE_SECRET],
-    maxAge: 24 * 60 * 60 * 1000,
-    sameSite: isProduction ? "none" : "lax",
-    secure: isProduction,
-  })
-);
-
-app.use(
-  cors({
-    origin: ["https://arenago.vercel.app", "http://localhost:3000"],
-    credentials: true,
-  })
-);
-
-
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.json());
-
-
-// ✅ CORS avec credentials
-const allowedOrigins = [
-  "https://arenago.vercel.app",
-  "http://localhost:3000",
-];
-
-
-// ✅ Body Parser
-app.use(express.json());
-
-// ✅ Routes
-app.use("/auth", authrouter);
-app.use("/users", userRoutes);
-app.use("/fields", fieldsrouter);
-app.use("/booking", bookingrouter);
-app.use("/api/stats", statsRoutes);
-app.use("/admin", adminRoutes);
-app.use("/api/chatbot", chatbotRoutes);
-app.use("/api/contact", contactRoutes);
-
-// ✅ Serveur
 app.listen(PORT, () => {
   connect();
   console.log(`🚀 Server running on port ${PORT}`);

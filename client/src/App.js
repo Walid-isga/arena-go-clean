@@ -1,7 +1,6 @@
 import "./App.css";
 import "./custom.css";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -30,24 +29,13 @@ import PrivateRoute from "./admin/PrivateRoute";
 import NavBar from "./Components/NavBar";
 import ChatBot from "./Components/ChatBot";
 
-// Auth context
 import { useAuth } from "./hooks/useAuth";
 
 function App() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
 
   const showClientNavbar = !location.pathname.includes("/admin");
-
-  useEffect(() => {
-    // Simule un petit délai pour l'affichage du chargement
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500); // 500 ms
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   if (loading) {
     return <div style={{ color: "#fff", textAlign: "center", marginTop: "20%" }}>Chargement...</div>;
@@ -71,8 +59,6 @@ function App() {
         <Route path="/edit-field/:id" element={user ? <EditField /> : <Navigate to="/login" />} />
         <Route path="/monprofil" element={user ? <MonProfil /> : <Navigate to="/login" />} />
         <Route path="/session" element={<Session />} />
-
-        {/* Routes Admin */}
         <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
         <Route path="/admin/reservations" element={<PrivateRoute><ReservationsTable /></PrivateRoute>} />
         <Route path="/admin/stats" element={<PrivateRoute><Charts /></PrivateRoute>} />
