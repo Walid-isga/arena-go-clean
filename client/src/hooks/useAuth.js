@@ -14,7 +14,11 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
 
+      console.log("🔍 axios baseURL:", axios.defaults.baseURL);
+      console.log("📦 token dans localStorage:", token);
+
       if (!token) {
+        console.warn("⛔ Aucun token trouvé, utilisateur non authentifié");
         setLoading(false);
         return;
       }
@@ -26,10 +30,12 @@ export const AuthProvider = ({ children }) => {
           },
         });
 
+        console.log("✅ Utilisateur connecté :", res.data);
+
         setUser(res.data);
         localStorage.setItem("user", JSON.stringify(res.data));
       } catch (err) {
-        console.error("❌ /users/me:", err.response?.data || err.message);
+        console.error("❌ Erreur /users/me :", err.response?.data || err.message);
         setUser(null);
         localStorage.removeItem("user");
       } finally {
@@ -41,10 +47,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = async () => {
+    const token = localStorage.getItem("token");
+
     try {
       await axios.get("/auth/logout", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
     } catch (err) {
