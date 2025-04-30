@@ -30,8 +30,13 @@ export default function MonProfil() {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("⛔ Token manquant. Veuillez vous reconnecter.");
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("token");
         const res = await axios.get("/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -46,9 +51,11 @@ export default function MonProfil() {
           picture: userData.picture || "",
         });
       } catch (err) {
-        console.error("Erreur récupération utilisateur :", err);
+        console.error("Erreur récupération utilisateur :", err.response?.data || err.message);
+        toast.error("❌ Erreur de récupération du profil.");
       }
     };
+
     fetchUser();
   }, []);
 
@@ -61,6 +68,11 @@ export default function MonProfil() {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("⛔ Session expirée. Veuillez vous reconnecter.");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("username", form.username);
       formData.append("email", form.email);
@@ -95,7 +107,7 @@ export default function MonProfil() {
 
       toast.success("✅ Profil mis à jour !");
     } catch (err) {
-      console.error("Erreur de mise à jour :", err);
+      console.error("Erreur de mise à jour :", err.response?.data || err.message);
       toast.error("❌ Erreur lors de la mise à jour.");
     } finally {
       setLoading(false);
@@ -108,12 +120,21 @@ export default function MonProfil() {
       return URL.createObjectURL(form.picture);
     }
     if (typeof form.picture === "string" && form.picture.startsWith("/uploads")) {
-      return `${form.picture}`;
+      return form.picture;
     }
     return form.picture;
   };
 
-  if (!user) return <p style={{ textAlign: "center", marginTop: "50px" }}>Chargement du profil...</p>;
+  if (!user) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <CircularProgress sx={{ color: "#FF6B00" }} />
+        <Typography mt={2} color="#003566">
+          Chargement du profil...
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Container maxWidth="sm" className="profile-container">
@@ -124,10 +145,7 @@ export default function MonProfil() {
             alt="avatar"
             className="profile-avatar"
           />
-
-          <Typography className="profile-title">
-            👤 Mon profil
-          </Typography>
+          <Typography className="profile-title">👤 Mon profil</Typography>
           <Typography className="profile-subtitle">
             Visualisez et mettez à jour vos informations personnelles
           </Typography>
@@ -171,23 +189,25 @@ export default function MonProfil() {
               </Grid>
 
               <Grid item xs={12}>
-                <Button
-                  component="label"
-                  className="profile-upload-btn"
-                >
+                <Button component="label" className="profile-upload-btn">
                   📁 Choisir une image de profil
                   <input
                     type="file"
                     hidden
                     accept="image/*"
                     onChange={(e) =>
-                      setForm((prev) => ({ ...prev, picture: e.target.files[0] }))
+                      setForm((prev) => ({
+                        ...prev,
+                        picture: e.target.files[0],
+                      }))
                     }
                   />
                 </Button>
                 {form.picture && (
                   <Typography className="profile-image-text">
-                    {form.picture instanceof File ? form.picture.name : "Image actuelle"}
+                    {form.picture instanceof File
+                      ? form.picture.name
+                      : "Image actuelle"}
                   </Typography>
                 )}
               </Grid>

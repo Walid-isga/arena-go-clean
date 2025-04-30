@@ -38,31 +38,46 @@ function App() {
   const showClientNavbar = !location.pathname.includes("/admin");
 
   if (loading) {
-    return <div style={{ color: "#fff", textAlign: "center", marginTop: "20%" }}>Chargement...</div>;
+    return (
+      <div style={{ color: "#fff", textAlign: "center", marginTop: "20%" }}>
+        Chargement...
+      </div>
+    );
   }
 
   return (
     <>
       {showClientNavbar && <NavBar />}
+
       <Routes>
+        {/* Pages publiques */}
         <Route path="/" element={<Landing />} />
         <Route path="/landing" element={<Landing />} />
         <Route path="/apropos" element={<Apropos />} />
         <Route path="/contact" element={<Contact />} />
+
+        {/* Auth */}
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/home" />} />
         <Route path="/register" element={!user ? <RegisterWithEmail /> : <Navigate to="/home" />} />
+
+        {/* Pages utilisateur connecté */}
         <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route path="/booking" element={user ? <Booking /> : <Navigate to="/login" />} />
         <Route path="/fields" element={user ? <Fields /> : <Navigate to="/login" />} />
         <Route path="/field/:id" element={user ? <FieldDetails /> : <Navigate to="/login" />} />
-        <Route path="/add-field" element={user ? <AddField /> : <Navigate to="/login" />} />
-        <Route path="/edit-field/:id" element={user ? <EditField /> : <Navigate to="/login" />} />
         <Route path="/monprofil" element={user ? <MonProfil /> : <Navigate to="/login" />} />
-        <Route path="/session" element={<Session />} />
+        <Route path="/session" element={user ? <Session /> : <Navigate to="/login" />} />
+
+        {/* Routes Admin */}
         <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
         <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
         <Route path="/admin/reservations" element={<PrivateRoute><ReservationsTable /></PrivateRoute>} />
         <Route path="/admin/stats" element={<PrivateRoute><Charts /></PrivateRoute>} />
+        <Route path="/admin/add-field" element={<PrivateRoute><AddField /></PrivateRoute>} />
+        <Route path="/admin/edit-field/:id" element={<PrivateRoute><EditField /></PrivateRoute>} />
+
+        {/* Redirection fallback */}
+        <Route path="*" element={<Navigate to="/landing" />} />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />
