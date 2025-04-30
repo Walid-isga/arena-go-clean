@@ -1,16 +1,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "../axiosConfig"; // ✅ Assure-toi que cette instance utilise REACT_APP_API_URL
+import axios from "../axiosConfig";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
-
       if (!token) {
         setLoading(false);
         return;
@@ -24,9 +26,11 @@ export const AuthProvider = ({ children }) => {
         });
 
         setUser(res.data);
+        localStorage.setItem("user", JSON.stringify(res.data)); // ✅ persist user
       } catch (err) {
-        console.error("❌ Erreur lors de la récupération de l'utilisateur :", err);
+        console.error("❌ /users/me error:", err);
         setUser(null);
+        localStorage.removeItem("user");
       } finally {
         setLoading(false);
       }
@@ -43,9 +47,11 @@ export const AuthProvider = ({ children }) => {
         },
       });
     } catch (err) {
-      console.error("❌ Erreur lors du logout :", err);
+      console.error("❌ logout error:", err);
     }
+
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
 

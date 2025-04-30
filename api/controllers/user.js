@@ -39,12 +39,10 @@ export const updateUserController = async (req, res) => {
 // ✅ Contrôleur : Récupérer les infos de l'utilisateur connecté via token
 export const getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.userId); // injecté depuis le middleware authMiddleware
-    if (!user) return res.status(404).json({ message: "Utilisateur introuvable." });
-
-    res.status(200).json(user);
-  } catch (error) {
-    console.error("Erreur dans getCurrentUser:", error);
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
+    res.json(user);
+  } catch (err) {
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
