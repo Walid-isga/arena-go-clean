@@ -23,18 +23,21 @@ const PORT = process.env.PORT || 8000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.set("trust proxy", 1); // ✅ Obligatoire en production
+// ✅ Nécessaire pour Railway en production
+app.set("trust proxy", 1);
 
-// ✅ Middleware express & CORS
-app.use(express.json());
-
+// ✅ Middleware CORS — LIGNE LA PLUS IMPORTANTE 🔥
 app.use(cors({
   origin: ["https://arenago.vercel.app", "http://localhost:3000"],
   credentials: true,
   methods: ["GET", "POST", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization"], // ⬅️ TRÈS IMPORTANT
 }));
 
+// ✅ Body parser
+app.use(express.json());
+
+// ✅ Sessions (optionnel si pas utilisé avec JWT)
 app.use(
   cookieSession({
     name: "session",
@@ -45,12 +48,14 @@ app.use(
   })
 );
 
+// ✅ Initialiser Passport si utilisé (sinon retire)
 app.use(passport.initialize());
 app.use(passport.session());
 
+// ✅ Serve fichiers statiques (ex: images terrains)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ Routes
+// ✅ Routes API
 app.use("/auth", authrouter);
 app.use("/users", usersrouter);
 app.use("/fields", fieldsrouter);
@@ -60,7 +65,7 @@ app.use("/admin", adminRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/contact", contactRoutes);
 
-// ✅ MongoDB
+// ✅ Connexion MongoDB
 const connect = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -70,6 +75,7 @@ const connect = async () => {
   }
 };
 
+// ✅ Lancer le serveur
 app.listen(PORT, () => {
   connect();
   console.log(`🚀 Server running on port ${PORT}`);
