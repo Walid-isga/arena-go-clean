@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "../axiosConfig";
+import axios from "../axiosConfig"; // ✅ Assure-toi que cette instance utilise REACT_APP_API_URL
 
 const AuthContext = createContext();
 
@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
+
       if (!token) {
         setLoading(false);
         return;
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
         setUser(res.data);
       } catch (err) {
-        console.error("❌ AuthContext error:", err);
+        console.error("❌ Erreur lors de la récupération de l'utilisateur :", err);
         setUser(null);
       } finally {
         setLoading(false);
@@ -36,9 +37,13 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.get("/auth/logout");
+      await axios.get("/auth/logout", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
     } catch (err) {
-      console.error("❌ Erreur logout :", err);
+      console.error("❌ Erreur lors du logout :", err);
     }
     localStorage.removeItem("token");
     setUser(null);
