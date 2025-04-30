@@ -1,5 +1,3 @@
-// src/Pages/Home.jsx
-
 import React, { useEffect, useState } from "react";
 import ProfileInformation from "../../Components/Home Components/Profile Information/ProfileInformation";
 import SlideShow from "../../Components/Home Components/Slide Show/SlideShow";
@@ -8,8 +6,9 @@ import UpcomingGames from "../../Components/Home Components/Upcoming Games/Upcom
 import LatestGames from "../../Components/Home Components/Latest Games/LatestGames";
 
 import { Container, Grid, Typography, Paper, Card, CardContent, CircularProgress } from "@mui/material";
+import axios from "../../axiosConfig";
 
-import "../../styles/Home.css"; // ✅ Ton futur Home.css que je vais aussi te donner
+import "../../styles/Home.css";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -17,23 +16,27 @@ export default function Home() {
   const [pastMatches, setPastMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Charger utilisateur connecté
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-        const res = await fetch("/users/me", {
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const res = await axios.get("/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!res.ok) throw new Error("Non autorisé");
-        const data = await res.json();
-
-        setUser(data);
-        fetchUserMatches(data._id);
+        console.log("✅ Utilisateur reçu dans Home :", res.data);
+        setUser(res.data);
+        fetchUserMatches(res.data._id);
       } catch (error) {
-        console.error("Erreur utilisateur :", error);
+        console.error("❌ Erreur utilisateur :", error.response?.data || error.message);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         window.location.href = "/login";
       }
     };
@@ -41,17 +44,15 @@ export default function Home() {
     fetchUser();
   }, []);
 
-  // Charger les matchs
   const fetchUserMatches = async (userId) => {
     try {
-      const res = await fetch(`/booking/user-matches/${userId}`);
-      const data = await res.json();
-      setUpcomingMatches(data.upcoming);
-      setPastMatches(data.past);
+      const res = await axios.get(`/booking/user-matches/${userId}`);
+      setUpcomingMatches(res.data.upcoming);
+      setPastMatches(res.data.past);
     } catch (error) {
-      console.error("Erreur récupération des matchs :", error);
+      console.error("❌ Erreur récupération des matchs :", error.response?.data || error.message);
     } finally {
-      setLoading(false); // ✅ arrêt du spinner après tout
+      setLoading(false);
     }
   };
 
@@ -69,7 +70,6 @@ export default function Home() {
   return (
     <Container maxWidth="lg" className="home-container">
       <Grid container spacing={3} className="fade-in">
-        
         <Grid item xs={12} md={4}>
           <Card className="home-card">
             <CardContent>
@@ -109,7 +109,6 @@ export default function Home() {
             <LatestGames matches={pastMatches} />
           </Paper>
         </Grid>
-
       </Grid>
     </Container>
   );
