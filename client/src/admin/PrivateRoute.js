@@ -1,20 +1,17 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth"; // ✅ on récupère le user via contexte
 
-/**
- * Composant de protection de route.
- * Si l'utilisateur n'est pas connecté, redirection vers login.
- * Si l'utilisateur n'est pas admin, redirection vers la page d'accueil.
- * Sinon, on autorise l'accès à la route protégée.
- */
-export default function PrivateRoute({ user, children }) {
+export default function PrivateRoute({ children }) {
+  const { user } = useAuth();
+
   if (!user) {
-    console.warn("Redirection : utilisateur non connecté");
+    console.warn("⛔ Redirection : utilisateur non connecté");
     return <Navigate to="/login" />;
   }
 
   if (!user.isAdmin) {
-    console.warn("Redirection : utilisateur sans droit admin");
+    console.warn("⛔ Redirection : utilisateur sans droit admin");
     return <Navigate to="/" />;
   }
 

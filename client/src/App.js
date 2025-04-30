@@ -59,6 +59,7 @@ function App() {
         <Route path="/edit-field/:id" element={user ? <EditField /> : <Navigate to="/login" />} />
         <Route path="/monprofil" element={user ? <MonProfil /> : <Navigate to="/login" />} />
         <Route path="/session" element={<Session />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
         <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
         <Route path="/admin/reservations" element={<PrivateRoute><ReservationsTable /></PrivateRoute>} />
         <Route path="/admin/stats" element={<PrivateRoute><Charts /></PrivateRoute>} />
