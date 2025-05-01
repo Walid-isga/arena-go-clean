@@ -10,7 +10,9 @@ export const createField = async (req, res) => {
       name: req.body.name,
       sport: req.body.sport,
       surfaceType: req.body.surfaceType,
-      city: req.body.city,
+      location: {
+        city: req.body.city, // ✅ CORRECT
+      },
       description: req.body.description,
       lights: req.body.lights === "true",
       dimensions: {

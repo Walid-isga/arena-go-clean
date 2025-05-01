@@ -4,28 +4,32 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Pages
-import Booking from "./Pages/Booking";
+// Pages publiques
 import Landing from "./Pages/LandingPage";
 import Apropos from "./Pages/Apropos";
 import Contact from "./Pages/Contact";
-import Login from "./Pages/Login";
-import Session from "./Pages/Session";
-import Fields from "./Pages/fields";
-import Home from "./Pages/Home Page/Home";
-import MonProfil from "./Pages/MonProfil";
-import RegisterWithEmail from "./Pages/RegisterWithEmail";
-import EditField from "./Pages/EditField";
-import AddField from "./Pages/AddField";
-import FieldDetails from "./Pages/FieldDetails";
 
-// Admin
+// Auth
+import Login from "./Pages/Login";
+import RegisterWithEmail from "./Pages/RegisterWithEmail";
+
+// Pages utilisateur connecté
+import Home from "./Pages/Home Page/Home";
+import Booking from "./Pages/Booking";
+import Fields from "./Pages/fields";
+import FieldDetails from "./Pages/FieldDetails";
+import MonProfil from "./Pages/MonProfil";
+import Session from "./Pages/Session";
+
+// Pages Admin
 import AdminDashboard from "./admin/AdminDashboard";
 import ReservationsTable from "./admin/ReservationsTable";
 import Charts from "./admin/Charts";
+import AddField from "./Pages/AddField";
+import EditField from "./Pages/EditField";
 import PrivateRoute from "./admin/PrivateRoute";
 
-// Components
+// Composants
 import NavBar from "./Components/NavBar";
 import ChatBot from "./Components/ChatBot";
 
@@ -35,7 +39,11 @@ function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  const showClientNavbar = !location.pathname.includes("/admin");
+  // ✅ Afficher la navbar utilisateur uniquement si :
+  // - on est hors d’une route admin
+  // - l'utilisateur n'est pas admin
+  const isAdminPath = location.pathname.startsWith("/admin");
+  const showClientNavbar = !isAdminPath && user && !user.isAdmin;
 
   if (loading) {
     return (
@@ -68,7 +76,7 @@ function App() {
         <Route path="/monprofil" element={user ? <MonProfil /> : <Navigate to="/login" />} />
         <Route path="/session" element={user ? <Session /> : <Navigate to="/login" />} />
 
-        {/* Routes Admin */}
+        {/* Pages Admin (protégées) */}
         <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
         <Route path="/admin/dashboard" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
         <Route path="/admin/reservations" element={<PrivateRoute><ReservationsTable /></PrivateRoute>} />
@@ -76,11 +84,13 @@ function App() {
         <Route path="/admin/add-field" element={<PrivateRoute><AddField /></PrivateRoute>} />
         <Route path="/admin/edit-field/:id" element={<PrivateRoute><EditField /></PrivateRoute>} />
 
-        {/* Redirection fallback */}
+        {/* Fallback : redirection vers landing */}
         <Route path="*" element={<Navigate to="/landing" />} />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={3000} />
+
+      {/* ✅ Ne pas afficher le ChatBot pour les admins */}
       {showClientNavbar && <ChatBot />}
     </>
   );

@@ -70,8 +70,9 @@ export default function Fields() {
           {fields.map((field) => {
             const rawPhoto = field.photos?.[0] || ""; // sécurité
             const imageUrl = rawPhoto
-              ? getImageUrl(rawPhoto)
-              : "https://via.placeholder.com/400x200?text=Pas+de+photo";
+            ? `https://arena-go-clean-production.up.railway.app/uploads/${rawPhoto.replace(/^uploads[\\/]+/, "")}`
+            : "https://via.placeholder.com/400x200?text=Pas+de+photo";
+          
 
             return (
               <Grid item xs={12} sm={6} md={4} key={field._id}>

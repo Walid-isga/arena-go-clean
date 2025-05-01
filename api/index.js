@@ -30,7 +30,7 @@ app.set("trust proxy", 1);
 app.use(cors({
   origin: ["https://arenago.vercel.app", "http://localhost:3000"],
   credentials: true,
-  methods: ["GET", "POST", "PATCH", "DELETE"],
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"], // ⬅️ TRÈS IMPORTANT
 }));
 
