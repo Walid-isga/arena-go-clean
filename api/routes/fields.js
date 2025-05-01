@@ -19,7 +19,7 @@ const upload = multer({ storage });
 
 // Routes principales
 router.post("/", upload.single("image"), createField); // Créer un terrain avec image
-router.put("/:id", updateField); // Modifier un terrain
+router.put("/:id", upload.single("photo"), updateField);
 router.delete("/:id", deleteField); // Supprimer un terrain
 router.get("/:id", getField); // Récupérer un seul terrain
 router.get("/", getAllFields); // Récupérer tous les terrains

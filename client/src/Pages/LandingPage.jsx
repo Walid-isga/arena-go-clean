@@ -58,32 +58,37 @@ export default function LandingPage() {
 
       {/* EVENTS SECTION */}
       <section id="events" className="events-section">
-        <h2>Nos Événements Sportifs</h2>
-        <div className="events-grid">
-          {loading ? (
-            <p>Chargement des terrains...</p>
-          ) : fields.length > 0 ? (
-            fields.map((field) => (
-              <div key={field._id} className="event-card">
-                {field.photos?.length > 0 ? (
-                  <img
-                    src={getImageUrl(field.photos[0])}
-                    alt={field.name}
-                    className="event-image"
-                  />
+  <h2>Nos Événements Sportifs</h2>
+  <div className="events-grid">
+    {loading ? (
+      <p>Chargement des terrains...</p>
+    ) : fields.length > 0 ? (
+      fields.map((field) => {
+        console.log("🧩 Field complet reçu :", field); // <= ici
+      
+        return (
+          <div key={field._id} className="event-card">
+            {field.photos?.length > 0 && field.photos[0] ? (
+              <img
+                src={`https://arena-go-clean-production.up.railway.app/uploads/${field.photos[0].replace(/^uploads[\\/]+/, "")}`}
+                alt={field.name}
+                className="event-image"
+              />
+            ) : (
+              <div className="no-image">Pas d'image</div>
+            )}
+            <h3>{field.name}</h3>
+            <p>{field.location?.city || "Ville inconnue"}</p>
+          </div>
+        );
+      })
+      
+    ) : (
+      <p>Aucun terrain disponible pour le moment.</p>
+    )}
+  </div>
+</section>
 
-                ) : (
-                  <div className="no-image">Pas d'image</div>
-                )}
-                <h3>{field.name}</h3>
-                <p>{field.location?.city || "Ville inconnue"}</p>
-              </div>
-            ))
-          ) : (
-            <p>Aucun terrain disponible pour le moment.</p>
-          )}
-        </div>
-      </section>
 
       <FooterLanding />
     </div>

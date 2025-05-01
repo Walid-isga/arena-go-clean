@@ -20,7 +20,7 @@ export default function Fields() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ Récupération des terrains depuis le backend
+  // Récupération des terrains
   const fetchFields = async () => {
     try {
       const { data } = await axios.get("/fields");
@@ -30,7 +30,7 @@ export default function Fields() {
     }
   };
 
-  // ✅ Suppression d'un terrain (admin)
+  // Suppression
   const deleteField = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer ce terrain ?")) return;
     try {
@@ -54,7 +54,6 @@ export default function Fields() {
           🏟️ Nos Terrains Disponibles
         </Typography>
 
-        {/* Bouton "Ajouter un terrain" pour admin */}
         {user?.isAdmin && (
           <Box sx={{ textAlign: "right", mb: 2 }}>
             <Button
@@ -69,8 +68,9 @@ export default function Fields() {
 
         <Grid container spacing={3}>
           {fields.map((field) => {
-            const imageUrl = field.photos?.length > 0
-              ? getImageUrl(field.photos[0])
+            const rawPhoto = field.photos?.[0] || ""; // sécurité
+            const imageUrl = rawPhoto
+              ? getImageUrl(rawPhoto)
               : "https://via.placeholder.com/400x200?text=Pas+de+photo";
 
             return (
@@ -102,7 +102,7 @@ export default function Fields() {
                     }}
                   />
 
-                  {/* Overlay boutons */}
+                  {/* Boutons overlay */}
                   <Box
                     className="overlay"
                     sx={{
@@ -164,7 +164,7 @@ export default function Fields() {
                     )}
                   </Box>
 
-                  {/* Informations du terrain */}
+                  {/* Infos terrain */}
                   <CardContent>
                     <Typography variant="h6">{field.name}</Typography>
                     <Typography variant="body2" color="gray">

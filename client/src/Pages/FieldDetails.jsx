@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Typography, Box, Card, CardMedia, CardContent, Button, Divider } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../axiosConfig";
+import { getImageUrl } from "../utils/getImageUrl";
 
 export default function FieldDetails() {
   const { id } = useParams();
@@ -38,7 +39,7 @@ export default function FieldDetails() {
           <CardMedia
             component="img"
             height="250"
-            image={`/${field.photos[0]}`}
+            image={getImageUrl(field.photos[0])}
             alt={field.name}
             sx={{
               objectFit: "cover",
