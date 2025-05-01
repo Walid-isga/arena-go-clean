@@ -6,7 +6,14 @@ import frLocale from "@fullcalendar/core/locales/fr";
 import AddBookingModal from "../Components/AddBookingModal";
 import FilterFields from "../Components/FilterFields";
 import axios from "../axiosConfig";
-import { Container, Paper, Typography, Divider } from "@mui/material";
+import {
+  Container,
+  Paper,
+  Typography,
+  Divider,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import "../styles/Booking.css";
 
@@ -24,6 +31,9 @@ export default function Booking() {
   const [selectedBookingInfo, setSelectedBookingInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState({ start: null, end: null });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const getFields = async () => {
@@ -56,26 +66,31 @@ export default function Booking() {
         },
       });
 
-      const reservedEvents = data.map(e => {
-        const base = {
-          id: e._id,
-          start: `${e.date}T${e.starttime}`,
-          end: `${e.date}T${e.endtime}`,
-        };
+      const reservedEvents = data
+        .map((e) => {
+          const base = {
+            id: e._id,
+            start: `${e.date}T${e.starttime}`,
+            end: `${e.date}T${e.endtime}`,
+          };
 
-        if (e.status === "Confirmed") {
-          return { ...base, title: "Réservé", className: "event-confirmed" };
-        } else if (e.status === "Pending") {
-          return { ...base, title: "En attente", className: "event-pending" };
-        }
+          if (e.status === "Confirmed") {
+            return { ...base, title: "Réservé", className: "event-confirmed" };
+          } else if (e.status === "Pending") {
+            return { ...base, title: "En attente", className: "event-pending" };
+          }
 
-        return null;
-      }).filter(Boolean);
+          return null;
+        })
+        .filter(Boolean);
 
-      const availableEvents = generateAvailableSlots(reservedEvents, dateRange.start, dateRange.end);
+      const availableEvents = generateAvailableSlots(
+        reservedEvents,
+        dateRange.start,
+        dateRange.end
+      );
 
       setEvents([...reservedEvents, ...availableEvents]);
-
     } catch (error) {
       console.error(error);
     } finally {
@@ -92,13 +107,19 @@ export default function Booking() {
       const currentDate = current.toISOString().split("T")[0];
 
       for (let hour = 8; hour < 24; hour++) {
-        const slotStart = new Date(`${currentDate}T${hour.toString().padStart(2, "0")}:00:00`);
-        const slotEnd = new Date(`${currentDate}T${(hour + 1).toString().padStart(2, "0")}:00:00`);
+        const slotStart = new Date(
+          `${currentDate}T${hour.toString().padStart(2, "0")}:00:00`
+        );
+        const slotEnd = new Date(
+          `${currentDate}T${(hour + 1).toString().padStart(2, "0")}:00:00`
+        );
 
-        const overlap = reservedEvents.some(event => {
+        const overlap = reservedEvents.some((event) => {
           const eventStart = new Date(event.start).getTime();
           const eventEnd = new Date(event.end).getTime();
-          return slotStart.getTime() < eventEnd && slotEnd.getTime() > eventStart;
+          return (
+            slotStart.getTime() < eventEnd && slotEnd.getTime() > eventStart
+          );
         });
 
         if (!overlap) {
@@ -107,7 +128,8 @@ export default function Booking() {
             title: "Libre",
             start: slotStart.toLocaleString("sv-SE").replace(" ", "T"),
             end: slotEnd.toLocaleString("sv-SE").replace(" ", "T"),
-            className: hour < 14 ? "event-available-morning" : "event-available-evening",
+            className:
+              hour < 14 ? "event-available-morning" : "event-available-evening",
           });
         }
       }
@@ -154,11 +176,27 @@ export default function Booking() {
   return (
     <>
       <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2, color: "#003566" }}>
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          sx={{
+            fontWeight: "bold",
+            mb: 2,
+            color: "#003566",
+            textAlign: "center",
+          }}
+        >
           📅 Réservations par terrain
         </Typography>
 
-        <Paper elevation={4} sx={{ p: 3, mb: 4, backgroundColor: "#ffffff", borderRadius: 3 }}>
+        <Paper
+          elevation={4}
+          sx={{
+            p: 3,
+            mb: 4,
+            backgroundColor: "#ffffff",
+            borderRadius: 3,
+          }}
+        >
           <Typography variant="h6" sx={{ mb: 1, color: "#003566" }}>
             🎯 Choisir un terrain
           </Typography>
@@ -166,7 +204,10 @@ export default function Booking() {
           <FilterFields uniqueField={fields} onFilter={handleFilter} />
         </Paper>
 
-        <Paper elevation={4} sx={{ p: 2, backgroundColor: "#ffffff", borderRadius: 3 }}>
+        <Paper
+          elevation={4}
+          sx={{ p: 2, backgroundColor: "#ffffff", borderRadius: 3 }}
+        >
           {loading && (
             <Typography align="center" sx={{ mb: 2, color: "#4FC3F7" }}>
               Chargement des créneaux...
@@ -180,7 +221,9 @@ export default function Booking() {
             selectable={true}
             selectMirror={true}
             events={events}
-            select={() => toast.error("❌ Merci de cliquer sur un créneau libre vert !")}
+            select={() =>
+              toast.error("❌ Merci de cliquer sur un créneau libre vert !")
+            }
             eventClick={handleEventClick}
             datesSet={handleDatesSet}
             eventOverlap={false}
@@ -188,7 +231,7 @@ export default function Booking() {
             allDaySlot={false}
             slotMinTime="08:00:00"
             slotMaxTime="24:00:00"
-            height={600}
+            height={isMobile ? 500 : 700}
             headerToolbar={{
               left: "prev,next today",
               center: "title",
@@ -245,7 +288,8 @@ export default function Booking() {
 function renderEventContent(eventInfo) {
   return (
     <div style={{ paddingTop: "5px" }}>
-      <b>{eventInfo.timeText}</b><br />
+      <b>{eventInfo.timeText}</b>
+      <br />
       <i>{eventInfo.event.title}</i>
     </div>
   );

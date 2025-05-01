@@ -81,7 +81,6 @@ export default function NavBar() {
 
   const handleOpenAvatarMenu = (e) => setAnchorEl(e.currentTarget);
   const handleCloseAvatarMenu = () => setAnchorEl(null);
-
   const handleDrawerToggle = () => setDrawerOpen(!drawerOpen);
 
   const links = [
@@ -102,161 +101,161 @@ export default function NavBar() {
   }
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#fff", color: "#003566" }}>
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        {/* Logo */}
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: "bold", cursor: "pointer" }}
-          onClick={() => navigate("/home")}
-        >
-          ArenaGo
-        </Typography>
+    <>
+      <AppBar position="static" sx={{ backgroundColor: "#fff", color: "#003566" }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          {/* Logo ArenaGo */}
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", cursor: "pointer" }}
+            onClick={() => navigate("/home")}
+          >
+            ArenaGo
+          </Typography>
 
-        {/* Desktop Links */}
-        {!isMobile && (
-          <Box sx={{ display: "flex", gap: 3 }}>
-            {links.map((item, i) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={i}
-                  to={item.path}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Box
-                    sx={{
-                      position: "relative",
-                      color: isActive ? "#FFA500" : "#003566",
-                      fontWeight: "bold",
-                      fontFamily: "Poppins",
-                      pb: "4px",
-                      "&::after": {
-                        content: '""',
-                        position: "absolute",
-                        width: isActive ? "100%" : "0%",
-                        height: "2px",
-                        left: 0,
-                        bottom: 0,
-                        backgroundColor: "#FFA500",
-                        transition: "width 0.3s ease-in-out",
-                      },
-                      "&:hover::after": {
-                        width: "100%",
-                      },
-                      "&:hover": {
-                        color: "#FFA500",
-                      },
-                      transition: "color 0.3s",
-                    }}
+          {/* Desktop Links */}
+          {!isMobile && (
+            <Box sx={{ display: "flex", gap: 3 }}>
+              {links.map((item, i) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={i}
+                    to={item.path}
+                    style={{ textDecoration: "none" }}
                   >
-                    {item.title}
-                  </Box>
-                </Link>
-              );
-            })}
-          </Box>
-        )}
-
-
-        {/* Avatar + Burger */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          {isMobile && (
-            <IconButton onClick={handleDrawerToggle}>
-              <MenuIcon />
-            </IconButton>
+                    <Box
+                      sx={{
+                        position: "relative",
+                        color: isActive ? "#FFA500" : "#003566",
+                        fontWeight: "bold",
+                        fontFamily: "Poppins",
+                        pb: "4px",
+                        "&::after": {
+                          content: '""',
+                          position: "absolute",
+                          width: isActive ? "100%" : "0%",
+                          height: "2px",
+                          left: 0,
+                          bottom: 0,
+                          backgroundColor: "#FFA500",
+                          transition: "width 0.3s ease-in-out",
+                        },
+                        "&:hover::after": {
+                          width: "100%",
+                        },
+                        "&:hover": {
+                          color: "#FFA500",
+                        },
+                        transition: "color 0.3s",
+                      }}
+                    >
+                      {item.title}
+                    </Box>
+                  </Link>
+                );
+              })}
+            </Box>
           )}
-          <Avatar
-            src={getPictureUrl()}
-            alt={user.username}
-            onClick={handleOpenAvatarMenu}
-            sx={{
-              width: 40,
-              height: 40,
-              cursor: "pointer",
-              border: "2px solid #5BB0D8",
-              transition: "0.3s",
-              "&:hover": {
-                transform: "scale(1.1)",
-              },
-            }}
-          />
-        </Box>
 
-        {/* Menu Avatar */}
-        <Menu
-          anchorEl={anchorEl}
-          open={avatarMenuOpen}
-          onClose={handleCloseAvatarMenu}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
-          PaperProps={{
-            sx: {
-              backgroundColor: "#fff",
-              borderRadius: 2,
-              minWidth: 180,
+          {/* Avatar + Burger Mobile */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            {isMobile && (
+              <IconButton onClick={handleDrawerToggle}>
+                <MenuIcon />
+              </IconButton>
+            )}
+            <Avatar
+              src={getPictureUrl()}
+              alt={user.username}
+              onClick={handleOpenAvatarMenu}
+              sx={{
+                width: 40,
+                height: 40,
+                cursor: "pointer",
+                border: "2px solid #5BB0D8",
+                transition: "0.3s",
+                "&:hover": {
+                  transform: "scale(1.1)",
+                },
+              }}
+            />
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      {/* Menu Avatar */}
+      <Menu
+        anchorEl={anchorEl}
+        open={avatarMenuOpen}
+        onClose={handleCloseAvatarMenu}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        PaperProps={{
+          sx: {
+            backgroundColor: "#fff",
+            borderRadius: 2,
+            minWidth: 180,
+          },
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            navigate("/monprofil");
+            handleCloseAvatarMenu();
+          }}
+          sx={{
+            fontWeight: "bold",
+            color: "#003566",
+            position: "relative",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              width: 0,
+              height: "2px",
+              bottom: 0,
+              left: 0,
+              backgroundColor: "#FFA500",
+              transition: "width 0.3s ease-in-out",
+            },
+            "&:hover": {
+              color: "#FFA500",
+              "&::after": { width: "100%" },
             },
           }}
         >
-          <MenuItem
-            onClick={() => {
-              navigate("/monprofil");
-              handleCloseAvatarMenu();
-            }}
-            sx={{
-              fontWeight: "bold",
-              color: "#003566",
-              position: "relative",
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                width: 0,
-                height: "2px",
-                bottom: 0,
-                left: 0,
-                backgroundColor: "#FFA500",
-                transition: "width 0.3s ease-in-out",
-              },
-              "&:hover": {
-                color: "#FFA500",
-                "&::after": { width: "100%" },
-              },
-            }}
-          >
-            <AccountCircleIcon sx={{ mr: 1 }} />
-            Mon Profil
-          </MenuItem>
+          <AccountCircleIcon sx={{ mr: 1 }} />
+          Mon Profil
+        </MenuItem>
 
-          <Divider />
+        <Divider />
 
-          <MenuItem
-            onClick={handleLogout}
-            sx={{
-              fontWeight: "bold",
-              color: "#003566",
-              position: "relative",
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                width: 0,
-                height: "2px",
-                bottom: 0,
-                left: 0,
-                backgroundColor: "#FFA500",
-                transition: "width 0.3s ease-in-out",
-              },
-              "&:hover": {
-                color: "#FFA500",
-                "&::after": { width: "100%" },
-              },
-            }}
-          >
-            <LogoutIcon sx={{ mr: 1 }} />
-            Déconnexion
-          </MenuItem>
-        </Menu>
-
-      </Toolbar>
+        <MenuItem
+          onClick={handleLogout}
+          sx={{
+            fontWeight: "bold",
+            color: "#003566",
+            position: "relative",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              width: 0,
+              height: "2px",
+              bottom: 0,
+              left: 0,
+              backgroundColor: "#FFA500",
+              transition: "width 0.3s ease-in-out",
+            },
+            "&:hover": {
+              color: "#FFA500",
+              "&::after": { width: "100%" },
+            },
+          }}
+        >
+          <LogoutIcon sx={{ mr: 1 }} />
+          Déconnexion
+        </MenuItem>
+      </Menu>
 
       {/* Drawer Mobile */}
       <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
@@ -273,6 +272,6 @@ export default function NavBar() {
           </List>
         </Box>
       </Drawer>
-    </AppBar>
+    </>
   );
 }

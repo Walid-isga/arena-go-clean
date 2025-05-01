@@ -11,3 +11,13 @@
   color: white !important;
   border-color: #FF6B00 !important;
 }
+@media (max-width: 600px) {
+  .MuiTableCell-root {
+    padding: 8px !important;
+    font-size: 12px !important;
+  }
+  .MuiButton-root {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+  }
+}
