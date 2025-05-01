@@ -135,6 +135,25 @@ export default function Login() {
               S'inscrire
             </Link>
           </Typography>
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{
+              mt: 2,
+              py: 1.2,
+              fontWeight: "bold",
+              color: "#156D9D",
+              borderColor: "#156D9D",
+              "&:hover": {
+                backgroundColor: "#156D9D",
+                color: "#fff",
+              },
+            }}
+            onClick={() => navigate("/landing")}
+          >
+            Retour à l'accueil
+          </Button>
+
         </Card>
       </Grid>
 
