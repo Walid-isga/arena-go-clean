@@ -1,25 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../Assets/images/Arenago.png';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import '../Assets/Landing.css';
 
 export default function NavbarLanding() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header className="navbar-landing">
       <div className="navbar-content">
         <img src={Logo} alt="ArenaGo Logo" className="logo" />
-        <nav className="navbar-right">
 
-          {/* 👉 Regroupe les liens "texte" dans un div spécial */}
+        {/* 🔽 Icone burger mobile */}
+        <div className="burger-icon" onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <CloseIcon /> : <MenuIcon />}
+        </div>
+
+        {/* 🔽 Navigation - Desktop + Mobile */}
+        <nav className={`navbar-right ${menuOpen ? "open" : ""}`}>
           <div className="navbar-links">
-            <Link to="/landing">Accueil</Link>
-            <Link to="/apropos">À propos</Link>
-            <Link to="/contact">Contact</Link>
+            <Link to="/landing" onClick={() => setMenuOpen(false)}>Accueil</Link>
+            <Link to="/apropos" onClick={() => setMenuOpen(false)}>À propos</Link>
+            <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
           </div>
-
-          {/* 👉 Les deux boutons restent indépendants */}
-          <Link to="/login" className="btn-login">Se connecter</Link>
-          <Link to="/register" className="btn-register">Créer un compte</Link>
+          <Link to="/login" className="btn-login" onClick={() => setMenuOpen(false)}>Se connecter</Link>
+          <Link to="/register" className="btn-register" onClick={() => setMenuOpen(false)}>Créer un compte</Link>
         </nav>
       </div>
     </header>

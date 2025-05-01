@@ -35,6 +35,7 @@ import ChatBot from "./Components/ChatBot";
 
 import { useAuth } from "./hooks/useAuth";
 import PrivateUserRoute from "./admin/PrivateUserRoute"; // importe le nouveau composant
+import PublicFieldDetails from "./Pages/PublicFieldDetails";
 
 function App() {
   const { user, loading } = useAuth();
@@ -73,6 +74,7 @@ function App() {
         <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route path="/booking" element={user ? <Booking /> : <Navigate to="/login" />} />
         <Route path="/fields" element={user ? <Fields /> : <Navigate to="/login" />} />
+        <Route path="/field/:id" element={<PublicFieldDetails />} />
         <Route path="/field/:id" element={user ? <FieldDetails /> : <Navigate to="/login" />} />
         <Route path="/monprofil" element={user ? <MonProfil /> : <Navigate to="/login" />} />
         <Route path="/session" element={user ? <Session /> : <Navigate to="/login" />} />

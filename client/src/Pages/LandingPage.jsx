@@ -1,30 +1,44 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NavbarLanding from '../Components/NavbarLanding';
 import FooterLanding from '../Components/FooterLanding';
 import '../Assets/Landing.css';
-import axios from '../axiosConfig'; // ✅ utilise la config avec baseURL dynamique
-import { getImageUrl } from "../utils/getImageUrl";
+import axios from '../axiosConfig';
 
 export default function LandingPage() {
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchFields = async () => {
       try {
         const res = await axios.get('/fields');
-        const data = res.data;
-
-        // ✅ Sécurité : si data n’est pas un tableau, on ignore
-        setFields(Array.isArray(data) ? data : []);
+        const data = Array.isArray(res.data) ? res.data : [];
+        setFields(data);
       } catch (err) {
         console.error("Erreur récupération terrains :", err.message);
-        setFields([]); // fallback vide en cas d’erreur
+        setFields([]);
       } finally {
         setLoading(false);
       }
     };
     fetchFields();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const elements = document.querySelectorAll(".slide-in");
+      elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100) {
+          el.classList.add("visible");
+        }
+      });
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -40,17 +54,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* LOGO SECTION */}
+      {/* LOGO + SLOGAN */}
       <section className="logo-section">
         <img src="/images/arenalanding.png" alt="ArenaGo Logo" className="hero-logo animated-fade" />
       </section>
-
-      {/* SLOGAN SECTION */}
       <section className="slogan-section">
         <h2 className="hero-slogan animated-fade">L'expérience ultime du sport au Maroc.</h2>
       </section>
 
-      {/* PRESENTATION SECTION */}
+      {/* PRESENTATION */}
       <section className="presentation-section">
         <p>Réservez facilement le meilleur espace pour votre sport, où que vous soyez au Maroc.</p>
         <p>Rapide, fiable, accessible : avec ArenaGo, le match commence avant même d’entrer sur le terrain.</p>
@@ -58,37 +70,60 @@ export default function LandingPage() {
 
       {/* EVENTS SECTION */}
       <section id="events" className="events-section">
-  <h2>Nos Événements Sportifs</h2>
-  <div className="events-grid">
-    {loading ? (
-      <p>Chargement des terrains...</p>
-    ) : fields.length > 0 ? (
-      fields.map((field) => {
-        console.log("🧩 Field complet reçu :", field); // <= ici
-      
-        return (
-          <div key={field._id} className="event-card">
-            {field.photos?.length > 0 && field.photos[0] ? (
-              <img
-                src={`https://arena-go-clean-production.up.railway.app/uploads/${field.photos[0].replace(/^uploads[\\/]+/, "")}`}
-                alt={field.name}
-                className="event-image"
-              />
-            ) : (
-              <div className="no-image">Pas d'image</div>
-            )}
-            <h3>{field.name}</h3>
-            <p>{field.location?.city || "Ville inconnue"}</p>
-          </div>
-        );
-      })
-      
-    ) : (
-      <p>Aucun terrain disponible pour le moment.</p>
-    )}
-  </div>
-</section>
+        <h2>Nos Espaces Sportifs</h2>
 
+        {loading ? (
+          <p>Chargement des terrains...</p>
+        ) : fields.length > 0 ? (
+          fields.map((field, index) => {
+            const isEven = index % 2 === 0;
+            const photoPath = field.photos?.[0];
+            const imageUrl = photoPath
+              ? `https://arena-go-clean-production.up.railway.app/uploads/${photoPath.replace(/^uploads[\\/]+/, "")}`
+              : null;
+
+            return (
+              <div key={field._id} className={`event-block slide-in ${isEven ? 'left' : 'right'}`}>
+                {isEven ? (
+                  <>
+                    <div className="event-image-wrapper">
+                      {imageUrl ? (
+                        <img src={imageUrl} alt={field.name} className="event-block-image" />
+                      ) : (
+                        <div className="no-image">Image non disponible</div>
+                      )}
+                    </div>
+                    <div className="event-description">
+                      <h3>{field.name}</h3>
+                      <p className="event-city">📍 {field.location?.city || "Ville inconnue"}</p>
+                      <p className="event-text">{field.publicDescription || "Aucune description publique disponible."}</p>
+                      <button className="btn-hero" onClick={() => navigate(`/field/${field._id}`)}>En savoir plus</button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="event-description">
+                      <h3>{field.name}</h3>
+                      <p className="event-city">📍 {field.location?.city || "Ville inconnue"}</p>
+                      <p className="event-text">{field.publicDescription || "Aucune description publique disponible."}</p>
+                      <button className="btn-hero" onClick={() => navigate(`/field/${field._id}`)}>En savoir plus</button>
+                    </div>
+                    <div className="event-image-wrapper">
+                      {imageUrl ? (
+                        <img src={imageUrl} alt={field.name} className="event-block-image" />
+                      ) : (
+                        <div className="no-image">Image non disponible</div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <p>Aucun terrain disponible pour le moment.</p>
+        )}
+      </section>
 
       <FooterLanding />
     </div>

@@ -14,6 +14,7 @@ export const createField = async (req, res) => {
         city: req.body.city, // ✅ CORRECT
       },
       description: req.body.description,
+      publicDescription: req.body.publicDescription || "",
       lights: req.body.lights === "true",
       dimensions: {
         length: Number(req.body.length),
@@ -41,25 +42,26 @@ export const updateField = async (req, res) => {
     sport,
     surfaceType,
     description,
+    publicDescription, // ✅ on récupère la description publique
     length,
     width,
     city,
   } = req.body;
 
-  const file = req.file; // l'image uploadée si présente
+  const file = req.file;
 
   try {
-    // Récupérer le terrain existant
     const field = await Field.findById(fieldId);
     if (!field) {
       return res.status(404).json({ message: "Terrain non trouvé." });
     }
 
-    // Mettre à jour les champs
+    // ✅ Mise à jour des champs
     field.name = name || field.name;
     field.sport = sport || field.sport;
     field.surfaceType = surfaceType || field.surfaceType;
     field.description = description || field.description;
+    field.publicDescription = publicDescription || field.publicDescription; // ✅ on applique ici
     field.dimensions = {
       length: Number(length) || field.dimensions.length,
       width: Number(width) || field.dimensions.width,
@@ -68,13 +70,11 @@ export const updateField = async (req, res) => {
       city: city || field.location.city,
     };
 
-    // Si une nouvelle image a été uploadée
+    // ✅ Si nouvelle image
     if (file) {
-      // on remplace l'ancienne
       field.photos = [file.filename];
     }
 
-    // Sauvegarder les modifications
     const updated = await field.save();
 
     res.status(200).json({
@@ -86,6 +86,7 @@ export const updateField = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur lors de la mise à jour du terrain." });
   }
 };
+
 
 
 // ➡️ Supprimer un terrain

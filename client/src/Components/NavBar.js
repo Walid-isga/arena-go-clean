@@ -190,22 +190,72 @@ export default function NavBar() {
           onClose={handleCloseAvatarMenu}
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
+          PaperProps={{
+            sx: {
+              backgroundColor: "#fff",
+              borderRadius: 2,
+              minWidth: 180,
+            },
+          }}
         >
           <MenuItem
             onClick={() => {
               navigate("/monprofil");
               handleCloseAvatarMenu();
             }}
+            sx={{
+              fontWeight: "bold",
+              color: "#003566",
+              position: "relative",
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                width: 0,
+                height: "2px",
+                bottom: 0,
+                left: 0,
+                backgroundColor: "#FFA500",
+                transition: "width 0.3s ease-in-out",
+              },
+              "&:hover": {
+                color: "#FFA500",
+                "&::after": { width: "100%" },
+              },
+            }}
           >
             <AccountCircleIcon sx={{ mr: 1 }} />
             Mon Profil
           </MenuItem>
+
           <Divider />
-          <MenuItem onClick={handleLogout}>
+
+          <MenuItem
+            onClick={handleLogout}
+            sx={{
+              fontWeight: "bold",
+              color: "#003566",
+              position: "relative",
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                width: 0,
+                height: "2px",
+                bottom: 0,
+                left: 0,
+                backgroundColor: "#FFA500",
+                transition: "width 0.3s ease-in-out",
+              },
+              "&:hover": {
+                color: "#FFA500",
+                "&::after": { width: "100%" },
+              },
+            }}
+          >
             <LogoutIcon sx={{ mr: 1 }} />
             Déconnexion
           </MenuItem>
         </Menu>
+
       </Toolbar>
 
       {/* Drawer Mobile */}

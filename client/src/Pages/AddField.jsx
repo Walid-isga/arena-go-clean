@@ -114,6 +114,17 @@ export default function AddField() {
 
         <TextField label="Ville" name="city" onChange={handleChange} required fullWidth margin="normal" sx={textFieldStyle} />
         <TextField label="Description" name="description" multiline rows={3} onChange={handleChange} fullWidth margin="normal" sx={textFieldStyle} />
+        <TextField
+            label="Description publique (affichée sur la page d'accueil)"
+            name="publicDescription"
+            multiline
+            rows={3}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            sx={textFieldStyle}
+          />
+
 
         <FormControlLabel
           control={<Switch color="primary" checked={form.lights} onChange={handleSwitchChange} />}
