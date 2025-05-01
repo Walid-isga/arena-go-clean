@@ -708,3 +708,72 @@
   background-color: #e65c00;
   transform: translateY(-2px) scale(1.03);
 }
+
+/* ✅ SECTION EVENTS responsive mobile */
+@media (max-width: 768px) {
+  .events-section {
+    padding: 20px;
+  }
+
+  .event-block {
+    flex-direction: column !important;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .event-description {
+    padding: 20px;
+  }
+
+  .event-block-image {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  .event-image-wrapper {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .event-text,
+  .event-city {
+    font-size: 16px;
+  }
+
+  .btn-hero {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin-top: 10px;
+  }
+
+  .hero-section {
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .hero-section h1 {
+    font-size: 32px;
+  }
+
+  .hero-section p {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .slogan-section h2 {
+    font-size: 20px;
+    text-align: center;
+    padding: 0 15px;
+  }
+
+  .presentation-section {
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .hero-logo {
+    width: 180px;
+  }
+}
+

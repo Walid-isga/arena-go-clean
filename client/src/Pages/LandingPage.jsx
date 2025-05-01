@@ -4,6 +4,7 @@ import NavbarLanding from '../Components/NavbarLanding';
 import FooterLanding from '../Components/FooterLanding';
 import '../Assets/Landing.css';
 import axios from '../axiosConfig';
+import { useTheme, useMediaQuery } from '@mui/material';
 
 export default function LandingPage() {
   const [fields, setFields] = useState([]);
