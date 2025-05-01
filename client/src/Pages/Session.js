@@ -183,15 +183,16 @@ export default function Session() {
                         <MenuItem onClick={handleDelete}>❌ Annuler</MenuItem>
                       </Menu>
                     </TableCell>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.startTime}</TableCell>
-                    <TableCell>{row.endTime}</TableCell>
-                    <TableCell>{row.field}</TableCell>
+                    <TableCell sx={{ color: '#003566 !important' }}>{row.date}</TableCell>
+                    <TableCell sx={{ color: '#003566 !important' }}>{row.startTime}</TableCell>
+                    <TableCell sx={{ color: '#003566 !important' }}>{row.endTime}</TableCell>
+                    <TableCell sx={{ color: '#003566 !important' }}>{row.field}</TableCell>
                     <TableCell>
                       <Chip
                         label={row.status === "Confirmed" ? "Confirmée" : "En attente"}
                         color={row.status === "Confirmed" ? "success" : "warning"}
                         variant="outlined"
+                        sx={{ '& .MuiChip-label': { color: '#003566 !important' } }}
                       />
                     </TableCell>
                     <TableCell>

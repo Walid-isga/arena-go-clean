@@ -68,3 +68,7 @@ html, body, #root {
     border-bottom-right-radius: 12px;
   }
 }
+/* Force le calendrier à ne pas casser sur mobile */
+.fc .fc-scrollgrid {
+  min-width: 650px; /* largeur minimale pour ne pas tasser les colonnes */
+}

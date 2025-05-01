@@ -13,6 +13,7 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
+  Box,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import "../styles/Booking.css";
@@ -214,31 +215,34 @@ export default function Booking() {
             </Typography>
           )}
 
-          <FullCalendar
-            plugins={[timeGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
-            editable={false}
-            selectable={true}
-            selectMirror={true}
-            events={events}
-            select={() =>
-              toast.error("❌ Merci de cliquer sur un créneau libre vert !")
-            }
-            eventClick={handleEventClick}
-            datesSet={handleDatesSet}
-            eventOverlap={false}
-            locale={frLocale}
-            allDaySlot={false}
-            slotMinTime="08:00:00"
-            slotMaxTime="24:00:00"
-            height={isMobile ? 500 : 700}
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "",
-            }}
-            eventContent={renderEventContent}
-          />
+          {/* ✅ Wrapper scroll horizontal sur mobile */}
+          <Box sx={{ overflowX: isMobile ? "auto" : "visible" }}>
+            <FullCalendar
+              plugins={[timeGridPlugin, interactionPlugin]}
+              initialView="timeGridWeek"
+              editable={false}
+              selectable={true}
+              selectMirror={true}
+              events={events}
+              select={() =>
+                toast.error("❌ Merci de cliquer sur un créneau libre vert !")
+              }
+              eventClick={handleEventClick}
+              datesSet={handleDatesSet}
+              eventOverlap={false}
+              locale={frLocale}
+              allDaySlot={false}
+              slotMinTime="08:00:00"
+              slotMaxTime="24:00:00"
+              height={isMobile ? 500 : 700}
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "",
+              }}
+              eventContent={renderEventContent}
+            />
+          </Box>
         </Paper>
       </Container>
 
@@ -278,6 +282,12 @@ export default function Booking() {
             color: #fff !important;
             border-radius: 8px;
             cursor: pointer;
+          }
+          /* ✅ Fix responsive FullCalendar */
+          @media (max-width: 768px) {
+            .fc .fc-scrollgrid {
+              min-width: 650px;
+            }
           }
         `}
       </style>
