@@ -13,7 +13,7 @@ export default function AdminNavbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/landing");
   };
 
   const fetchPendingBookings = async () => {

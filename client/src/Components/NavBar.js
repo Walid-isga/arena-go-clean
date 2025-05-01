@@ -75,7 +75,7 @@ export default function NavBar() {
   const handleLogout = () => {
     logout();
     toast.success("✅ Déconnecté !");
-    navigate("/");
+    navigate("/landing");
     handleCloseAvatarMenu();
   };
 
