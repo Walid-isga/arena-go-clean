@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import NavbarLanding from '../Components/NavbarLanding';
 import FooterLanding from '../Components/FooterLanding';
 import '../Assets/Landing.css';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import { toast } from 'react-toastify';
 
 export default function Contact() {

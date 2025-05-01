@@ -42,6 +42,7 @@ export default function LandingPage() {
 
       {/* LOGO SECTION */}
       <section className="logo-section">
+      console.log("🖼️ URL de l'image:", getImageUrl(field.photos[0]));
         <img src="/images/arenalanding.png" alt="ArenaGo Logo" className="hero-logo animated-fade" />
       </section>
 

@@ -20,6 +20,7 @@ export default function Fields() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // ✅ Récupération des terrains depuis le backend
   const fetchFields = async () => {
     try {
       const { data } = await axios.get("/fields");
@@ -29,6 +30,7 @@ export default function Fields() {
     }
   };
 
+  // ✅ Suppression d'un terrain (admin)
   const deleteField = async (id) => {
     if (!window.confirm("Voulez-vous vraiment supprimer ce terrain ?")) return;
     try {
@@ -52,6 +54,7 @@ export default function Fields() {
           🏟️ Nos Terrains Disponibles
         </Typography>
 
+        {/* Bouton "Ajouter un terrain" pour admin */}
         {user?.isAdmin && (
           <Box sx={{ textAlign: "right", mb: 2 }}>
             <Button
@@ -99,6 +102,7 @@ export default function Fields() {
                     }}
                   />
 
+                  {/* Overlay boutons */}
                   <Box
                     className="overlay"
                     sx={{
@@ -160,6 +164,7 @@ export default function Fields() {
                     )}
                   </Box>
 
+                  {/* Informations du terrain */}
                   <CardContent>
                     <Typography variant="h6">{field.name}</Typography>
                     <Typography variant="body2" color="gray">
