@@ -71,7 +71,6 @@ export default function NavBar() {
     }
     return user.picture;
   };
-  
 
   const handleLogout = () => {
     logout();
@@ -117,22 +116,48 @@ export default function NavBar() {
         {/* Desktop Links */}
         {!isMobile && (
           <Box sx={{ display: "flex", gap: 3 }}>
-            {links.map((item, i) => (
-              <Link
-                key={i}
-                to={item.path}
-                style={{
-                  textDecoration: "none",
-                  color: "#003566",
-                  fontWeight: "bold",
-                  fontFamily: "Poppins",
-                }}
-              >
-                {item.title}
-              </Link>
-            ))}
+            {links.map((item, i) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={i}
+                  to={item.path}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Box
+                    sx={{
+                      position: "relative",
+                      color: isActive ? "#FFA500" : "#003566",
+                      fontWeight: "bold",
+                      fontFamily: "Poppins",
+                      pb: "4px",
+                      "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        width: isActive ? "100%" : "0%",
+                        height: "2px",
+                        left: 0,
+                        bottom: 0,
+                        backgroundColor: "#FFA500",
+                        transition: "width 0.3s ease-in-out",
+                      },
+                      "&:hover::after": {
+                        width: "100%",
+                      },
+                      "&:hover": {
+                        color: "#FFA500",
+                      },
+                      transition: "color 0.3s",
+                    }}
+                  >
+                    {item.title}
+                  </Box>
+                </Link>
+              );
+            })}
           </Box>
         )}
+
 
         {/* Avatar + Burger */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>

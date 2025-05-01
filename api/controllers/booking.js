@@ -160,20 +160,20 @@ export const getBookingsByField = async (req, res) => {
 
     const query = {
       field: id,
-      status: "Confirmed",
     };
 
-    // Si start et end existent, on filtre sur la date
     if (start && end) {
       query.date = { $gte: start, $lte: end };
     }
 
+    // ✅ On récupère toutes les réservations (Confirmed + Pending)
     const bookings = await Booking.find(query);
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 export const getPendingBookings = async (req, res) => {

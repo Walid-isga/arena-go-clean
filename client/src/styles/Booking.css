@@ -60,6 +60,12 @@
     font-weight: bold !important;
     border-radius: 8px !important;
   }
+  .event-pending {
+    background-color: #FF9800 !important;
+    color: #fff !important;
+    border-radius: 8px;
+    cursor: not-allowed;
+  }  
   
   /* 🌞 Event Libre Matin (Vert clair) */
   .event-available-morning {

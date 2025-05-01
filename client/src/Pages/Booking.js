@@ -6,14 +6,13 @@ import frLocale from "@fullcalendar/core/locales/fr";
 import AddBookingModal from "../Components/AddBookingModal";
 import FilterFields from "../Components/FilterFields";
 import axios from "../axiosConfig";
-import { Container, Paper, Typography, Divider, CircularProgress } from "@mui/material";
+import { Container, Paper, Typography, Divider } from "@mui/material";
 import { toast } from "react-toastify";
 import "../styles/Booking.css";
 
-// 🔵 Fonction utilitaire pour ajouter des jours
 const addDays = (date, days) => {
   const result = new Date(date);
-  result.setDate(date.getDate() + days);
+  result.setDate(result.getDate() + days);
   return result;
 };
 
@@ -26,16 +25,15 @@ export default function Booking() {
   const [loading, setLoading] = useState(false);
   const [dateRange, setDateRange] = useState({ start: null, end: null });
 
-  const getFields = async () => {
-    try {
-      const { data } = await axios.get("/fields/");
-      setFields(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
+    const getFields = async () => {
+      try {
+        const { data } = await axios.get("/fields/");
+        setFields(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
     getFields();
   }, []);
 
@@ -58,19 +56,26 @@ export default function Booking() {
         },
       });
 
-      const reservedEvents = data
-        .filter(e => e.status === "Confirmed")
-        .map(e => ({
+      const reservedEvents = data.map(e => {
+        const base = {
           id: e._id,
-          title: "Réservé",
           start: `${e.date}T${e.starttime}`,
           end: `${e.date}T${e.endtime}`,
-          className: "event-confirmed",
-        }));
+        };
+
+        if (e.status === "Confirmed") {
+          return { ...base, title: "Réservé", className: "event-confirmed" };
+        } else if (e.status === "Pending") {
+          return { ...base, title: "En attente", className: "event-pending" };
+        }
+
+        return null;
+      }).filter(Boolean);
 
       const availableEvents = generateAvailableSlots(reservedEvents, dateRange.start, dateRange.end);
 
       setEvents([...reservedEvents, ...availableEvents]);
+
     } catch (error) {
       console.error(error);
     } finally {
@@ -91,17 +96,17 @@ export default function Booking() {
         const slotEnd = new Date(`${currentDate}T${(hour + 1).toString().padStart(2, "0")}:00:00`);
 
         const overlap = reservedEvents.some(event => {
-          const eventStart = new Date(event.start);
-          const eventEnd = new Date(event.end);
-          return slotStart < eventEnd && slotEnd > eventStart;
+          const eventStart = new Date(event.start).getTime();
+          const eventEnd = new Date(event.end).getTime();
+          return slotStart.getTime() < eventEnd && slotEnd.getTime() > eventStart;
         });
 
         if (!overlap) {
           slots.push({
             id: `available-${currentDate}-${hour}`,
             title: "Libre",
-            start: slotStart.toISOString(),
-            end: slotEnd.toISOString(),
+            start: slotStart.toLocaleString("sv-SE").replace(" ", "T"),
+            end: slotEnd.toLocaleString("sv-SE").replace(" ", "T"),
             className: hour < 14 ? "event-available-morning" : "event-available-evening",
           });
         }
@@ -113,12 +118,11 @@ export default function Booking() {
     return slots;
   };
 
-  const handleDateSelect = () => {
-    toast.error("❌ Merci de cliquer sur un créneau libre vert !");
-  };
-
   const handleEventClick = (info) => {
-    if (info.event.classNames.includes("event-available-morning") || info.event.classNames.includes("event-available-evening")) {
+    if (
+      info.event.classNames.includes("event-available-morning") ||
+      info.event.classNames.includes("event-available-evening")
+    ) {
       const start = info.event.startStr;
       const end = info.event.endStr;
       const date = start.split("T")[0];
@@ -128,19 +132,15 @@ export default function Booking() {
       setSelectedBookingInfo({ date, starttime, endtime, field });
       setOpen(true);
       toast.success("✅ Créneau libre sélectionné !");
+    } else if (info.event.classNames.includes("event-pending")) {
+      toast.info("🕒 Ce créneau est en attente de validation.");
     } else {
       toast.error("❌ Ce créneau est déjà réservé !");
     }
   };
 
-  const handleSuccess = () => {
-    setOpen(false);
-    fetchEvents();
-    toast.success("✅ Réservation confirmée !");
-  };
-
-  const handleError = () => {
-    toast.error("❌ Erreur lors de la réservation");
+  const handleDatesSet = (info) => {
+    setDateRange({ start: info.startStr, end: info.endStr });
   };
 
   const handleFilter = (Field) => {
@@ -149,13 +149,6 @@ export default function Booking() {
       return;
     }
     setField(Field);
-  };
-
-  const handleDatesSet = (info) => {
-    setDateRange({
-      start: info.startStr,
-      end: info.endStr,
-    });
   };
 
   return (
@@ -180,41 +173,39 @@ export default function Booking() {
             </Typography>
           )}
 
-            <FullCalendar
-              plugins={[timeGridPlugin, interactionPlugin]}
-              initialView="timeGridWeek"
-              editable={false}
-              selectable={true}
-              selectMirror={true}
-              events={events}
-              select={handleDateSelect}
-              eventClick={handleEventClick}
-              datesSet={handleDatesSet}
-              eventOverlap={false}
-              locale={frLocale}
-              allDaySlot={false}
-              slotMinTime="08:00:00"
-              slotMaxTime="24:00:00"
-              height={600}
-              headerToolbar={{
-                left: "prev,next today",
-                center: "title",
-                right: "timeGridWeek",
-              }}
-              contentHeight="auto"
-              eventContent={renderEventContent}
-              dayHeaderClassNames="calendar-header"
-              slotLabelClassNames="calendar-slot"
-              eventBackgroundColor="#f5f5f5"
-              eventBorderColor="#ccc"
-            />
-
+          <FullCalendar
+            plugins={[timeGridPlugin, interactionPlugin]}
+            initialView="timeGridWeek"
+            editable={false}
+            selectable={true}
+            selectMirror={true}
+            events={events}
+            select={() => toast.error("❌ Merci de cliquer sur un créneau libre vert !")}
+            eventClick={handleEventClick}
+            datesSet={handleDatesSet}
+            eventOverlap={false}
+            locale={frLocale}
+            allDaySlot={false}
+            slotMinTime="08:00:00"
+            slotMaxTime="24:00:00"
+            height={600}
+            headerToolbar={{
+              left: "prev,next today",
+              center: "title",
+              right: "",
+            }}
+            eventContent={renderEventContent}
+          />
         </Paper>
       </Container>
 
       <AddBookingModal
-        handleSuccess={handleSuccess}
-        handleError={handleError}
+        handleSuccess={() => {
+          setOpen(false);
+          fetchEvents();
+          toast.success("✅ Réservation confirmée !");
+        }}
+        handleError={() => toast.error("❌ Erreur lors de la réservation")}
         open={open}
         handleSubmit={setOpen}
         selectedInfo={selectedBookingInfo}
@@ -227,14 +218,18 @@ export default function Booking() {
             color: #fff !important;
             border-radius: 8px;
           }
-
+          .event-pending {
+            background-color: #FF9800 !important;
+            color: #fff !important;
+            border-radius: 8px;
+            cursor: not-allowed;
+          }
           .event-available-morning {
             background-color: #81C784 !important;
             color: #fff !important;
             border-radius: 8px;
             cursor: pointer;
           }
-
           .event-available-evening {
             background-color: #388E3C !important;
             color: #fff !important;
@@ -250,7 +245,7 @@ export default function Booking() {
 function renderEventContent(eventInfo) {
   return (
     <div style={{ paddingTop: "5px" }}>
-      <b>{eventInfo.timeText}</b> <br />
+      <b>{eventInfo.timeText}</b><br />
       <i>{eventInfo.event.title}</i>
     </div>
   );
