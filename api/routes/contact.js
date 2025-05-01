@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
 
   const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
   sendSmtpEmail.to = [{ email: 'rzlt404@gmail.com', name: 'Admin ArenaGo' }];
-  sendSmtpEmail.sender = { name: name, email: email }; // L'expéditeur visible
+  sendSmtpEmail.sender = { name: name, email: "walidfath02@gmail.com" }; // L'expéditeur visible
   sendSmtpEmail.subject = `📨 Nouveau message de ${name}`;
   sendSmtpEmail.htmlContent = `
   <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
       </div>
       <div style="padding: 30px;">
         <p style="font-size: 16px;"><strong>Nom :</strong> ${name}</p>
-        <p style="font-size: 16px;"><strong>Email :</strong> ${email}</p>
+        <p style="font-size: 16px;"><strong>Adresse de l'expéditeur :</strong> ${email}</p>
         <p style="font-size: 16px;"><strong>Message :</strong></p>
         <p style="font-size: 15px; background-color: #f1f1f1; padding: 15px; border-left: 4px solid #FFA500; border-radius: 4px;">
           ${message}
