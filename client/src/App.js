@@ -39,9 +39,6 @@ function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // ✅ Afficher la navbar utilisateur uniquement si :
-  // - on est hors d’une route admin
-  // - l'utilisateur n'est pas admin
   const isAdminPath = location.pathname.startsWith("/admin");
   const showClientNavbar = !isAdminPath && user && !user.isAdmin;
 
@@ -65,16 +62,88 @@ function App() {
         <Route path="/contact" element={<Contact />} />
 
         {/* Auth */}
-        <Route path="/login" element={!user ? <Login /> : <Navigate to="/home" />} />
-        <Route path="/register" element={!user ? <RegisterWithEmail /> : <Navigate to="/home" />} />
+        <Route
+          path="/login"
+          element={
+            !user
+              ? <Login />
+              : user.isAdmin
+              ? <Navigate to="/admin/dashboard" />
+              : <Navigate to="/home" />
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            !user
+              ? <RegisterWithEmail />
+              : user.isAdmin
+              ? <Navigate to="/admin/dashboard" />
+              : <Navigate to="/home" />
+          }
+        />
 
         {/* Pages utilisateur connecté */}
-        <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
-        <Route path="/booking" element={user ? <Booking /> : <Navigate to="/login" />} />
-        <Route path="/fields" element={user ? <Fields /> : <Navigate to="/login" />} />
-        <Route path="/field/:id" element={user ? <FieldDetails /> : <Navigate to="/login" />} />
-        <Route path="/monprofil" element={user ? <MonProfil /> : <Navigate to="/login" />} />
-        <Route path="/session" element={user ? <Session /> : <Navigate to="/login" />} />
+        <Route
+          path="/home"
+          element={
+            user
+              ? user.isAdmin
+                ? <Navigate to="/admin/dashboard" />
+                : <Home />
+              : <Navigate to="/landing" />
+          }
+        />
+        <Route
+          path="/booking"
+          element={
+            user
+              ? user.isAdmin
+                ? <Navigate to="/admin/dashboard" />
+                : <Booking />
+              : <Navigate to="/landing" />
+          }
+        />
+        <Route
+          path="/fields"
+          element={
+            user
+              ? user.isAdmin
+                ? <Navigate to="/admin/dashboard" />
+                : <Fields />
+              : <Navigate to="/landing" />
+          }
+        />
+        <Route
+          path="/field/:id"
+          element={
+            user
+              ? user.isAdmin
+                ? <Navigate to="/admin/dashboard" />
+                : <FieldDetails />
+              : <Navigate to="/landing" />
+          }
+        />
+        <Route
+          path="/monprofil"
+          element={
+            user
+              ? user.isAdmin
+                ? <Navigate to="/admin/dashboard" />
+                : <MonProfil />
+              : <Navigate to="/landing" />
+          }
+        />
+        <Route
+          path="/session"
+          element={
+            user
+              ? user.isAdmin
+                ? <Navigate to="/admin/dashboard" />
+                : <Session />
+              : <Navigate to="/landing" />
+          }
+        />
 
         {/* Pages Admin (protégées) */}
         <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
