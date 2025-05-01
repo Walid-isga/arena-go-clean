@@ -161,7 +161,7 @@ export default function NavBar() {
           {/* Avatar + Burger Mobile */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {isMobile && (
-              <IconButton onClick={handleDrawerToggle}>
+              <IconButton onClick={handleDrawerToggle} sx={{ color: "#003566" }}>
                 <MenuIcon />
               </IconButton>
             )}
@@ -259,7 +259,17 @@ export default function NavBar() {
 
       {/* Drawer Mobile */}
       <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerToggle}>
+      <Box
+          sx={{
+            width: 220,
+            pt: 3,
+            backgroundColor: "#f9f9f9",
+            height: "100%",
+          }}
+          role="presentation"
+          onClick={handleDrawerToggle}
+        >
+
           <List>
             {links.map((item, i) => (
               <ListItem key={i} disablePadding>

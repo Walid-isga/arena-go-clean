@@ -20,7 +20,7 @@ export const createField = async (req, res) => {
         length: Number(req.body.length),
         width: Number(req.body.width),
       },
-      photos: req.file ? [req.file.path] : [],
+      photos: req.file ? [`uploads/${req.file.filename}`] : [],
     });
 
     const savedField = await newField.save();
@@ -72,7 +72,7 @@ export const updateField = async (req, res) => {
 
     // ✅ Si nouvelle image
     if (file) {
-      field.photos = [file.filename];
+      field.photos = [`uploads/${file.filename}`];
     }
 
     const updated = await field.save();

@@ -57,3 +57,14 @@ html, body, #root {
     transform: rotate(360deg);
   }
 }
+@media (max-width: 768px) {
+  .MuiToolbar-root {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .MuiDrawer-paper {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+}
