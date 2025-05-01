@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 
-// ✅ Contrôleur : Mise à jour du profil utilisateur
+// ✅ Mise à jour du profil utilisateur
 export const updateUserController = async (req, res) => {
   const userId = req.params.id;
   const { username, email, city, phone, password } = req.body;
@@ -36,13 +36,25 @@ export const updateUserController = async (req, res) => {
   }
 };
 
-// ✅ Contrôleur : Récupérer les infos de l'utilisateur connecté via token
+// ✅ Récupération de l'utilisateur connecté (par token)
 export const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password");
     if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
     res.json(user);
   } catch (err) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+// ✅ Récupération d’un utilisateur par ID (⚠️ utile pour téléchargement PDF)
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("❌ Erreur getUserById :", err);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
