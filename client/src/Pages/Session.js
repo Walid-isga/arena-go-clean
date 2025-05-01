@@ -147,7 +147,7 @@ export default function Session() {
         mb={4}
         textAlign="center"
       >
-        📝 Mes Réservations
+        📜 Mes Réservations
       </Typography>
 
       {!isMobile ? (
@@ -189,8 +189,20 @@ export default function Session() {
                     <TableCell sx={{ color: '#003566 !important' }}>{row.field}</TableCell>
                     <TableCell>
                       <Chip
-                        label={row.status === "Confirmed" ? "Confirmée" : "En attente"}
-                        color={row.status === "Confirmed" ? "success" : "warning"}
+                        label={
+                          row.status === "Confirmed"
+                            ? "Confirmée"
+                            : row.status === "Pending"
+                            ? "En attente"
+                            : "Rejetée"
+                        }
+                        color={
+                          row.status === "Confirmed"
+                            ? "success"
+                            : row.status === "Pending"
+                            ? "warning"
+                            : "error"
+                        }
                         variant="outlined"
                         sx={{ '& .MuiChip-label': { color: '#003566 !important' } }}
                       />
@@ -213,9 +225,13 @@ export default function Session() {
                         >
                           📄 Télécharger
                         </Button>
-                      ) : (
+                      ) : row.status === "Pending" ? (
                         <Typography variant="body2" color="gray">
                           En attente
+                        </Typography>
+                      ) : (
+                        <Typography variant="body2" color="error">
+                          Rejetée
                         </Typography>
                       )}
                     </TableCell>
@@ -226,7 +242,6 @@ export default function Session() {
           </TableContainer>
         </Paper>
       ) : (
-        // 📱 MOBILE VIEW : cards
         rows.map((row, index) => (
           <Card key={index} elevation={4} sx={{ mb: 3, borderRadius: 3 }}>
             <CardContent>
@@ -252,10 +267,22 @@ export default function Session() {
               <Typography>⏰ {row.startTime} - {row.endTime}</Typography>
               <Typography>🏟 Terrain : {row.field}</Typography>
               <Typography>
-                📌 Statut :{" "}
+                📌 Statut :
                 <Chip
-                  label={row.status === "Confirmed" ? "Confirmée" : "En attente"}
-                  color={row.status === "Confirmed" ? "success" : "warning"}
+                  label={
+                    row.status === "Confirmed"
+                      ? "Confirmée"
+                      : row.status === "Pending"
+                      ? "En attente"
+                      : "Rejetée"
+                  }
+                  color={
+                    row.status === "Confirmed"
+                      ? "success"
+                      : row.status === "Pending"
+                      ? "warning"
+                      : "error"
+                  }
                   size="small"
                 />
               </Typography>
@@ -279,9 +306,13 @@ export default function Session() {
                 >
                   📄 Télécharger PDF
                 </Button>
-              ) : (
+              ) : row.status === "Pending" ? (
                 <Typography mt={2} variant="body2" color="gray">
                   ⚠️ En attente de validation
+                </Typography>
+              ) : (
+                <Typography mt={2} variant="body2" color="error">
+                  ❌ Réservation rejetée
                 </Typography>
               )}
             </CardContent>
