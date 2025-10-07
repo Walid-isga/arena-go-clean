@@ -39,7 +39,7 @@ export default function FieldDetails() {
           <CardMedia
             component="img"
             height="250"
-            image={`https://compassionate-darwin.157-180-51-251.plesk.page/uploads/${field.photos[0]?.replace(/^uploads[\\/]+/, "")}`}
+            image={`https://arenago-production.up.railway.app/uploads/${field.photos[0]?.replace(/^uploads[\\/]+/, "")}`}
             alt={field.name}
             sx={{
               objectFit: "cover",
