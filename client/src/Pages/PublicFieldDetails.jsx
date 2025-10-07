@@ -57,7 +57,7 @@ export default function PublicFieldDetails() {
           {field.photos?.[0] && (
             <Box sx={{ width: "100%", height: { xs: 220, sm: 300 }, overflow: "hidden" }}>
               <img
-                src={`http://205.209.106.203:5001/uploads/${field.photos[0].replace(/^uploads[\\/]+/, "")}`}
+                src={`https://compassionate-darwin.157-180-51-251.plesk.page/uploads/${field.photos[0].replace(/^uploads[\\/]+/, "")}`}
                 alt={field.name}
                 style={{
                   width: "100%",

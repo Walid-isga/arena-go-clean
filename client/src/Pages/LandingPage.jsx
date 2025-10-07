@@ -80,7 +80,7 @@ export default function LandingPage() {
             const isEven = index % 2 === 0;
             const photoPath = field.photos?.[0];
             const imageUrl = photoPath
-              ? `http://205.209.106.203:5001/uploads/${photoPath.replace(/^uploads[\\/]+/, "")}`
+              ? `https://compassionate-darwin.157-180-51-251.plesk.page/uploads/${photoPath.replace(/^uploads[\\/]+/, "")}`
               : null;
 
             return (
