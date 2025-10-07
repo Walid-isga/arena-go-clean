@@ -70,7 +70,7 @@ export default function Fields() {
           {fields.map((field) => {
             const rawPhoto = field.photos?.[0] || ""; // sécurité
             const imageUrl = rawPhoto
-            ? `https://arena-go-clean-production.up.railway.app/uploads/${rawPhoto.replace(/^uploads[\\/]+/, "")}`
+            ? `http://205.209.106.203:5001/uploads/${rawPhoto.replace(/^uploads[\\/]+/, "")}`
             : "https://via.placeholder.com/400x200?text=Pas+de+photo";
           
 

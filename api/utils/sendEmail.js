@@ -4,7 +4,7 @@ dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  port: parseInt(process.env.SMTP_PORT),
   secure: process.env.SMTP_SECURE === "true",
   auth: {
     user: process.env.SMTP_USER,
@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// HTML Wrapper
 const wrapHtml = (title, content) => `
   <div style="font-family: 'Segoe UI', sans-serif; background-color: #f6f6f6; padding: 40px;">
     <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
@@ -28,7 +29,7 @@ const wrapHtml = (title, content) => `
   </div>
 `;
 
-// ✅ Confirmation de réservation
+// ✅ Confirmation
 export const sendBookingConfirmation = async ({ to, teamName, date, starttime, endtime, field }) => {
   const content = `
     <p>Bonjour <strong>${teamName}</strong>,</p>
@@ -51,7 +52,7 @@ export const sendBookingConfirmation = async ({ to, teamName, date, starttime, e
   console.log("📧 E-mail de confirmation envoyé : %s", info.messageId);
 };
 
-// ❌ Refus de réservation
+// ❌ Refus
 export const sendBookingRefusal = async ({ to, teamName, date, starttime, endtime, field }) => {
   const content = `
     <p>Bonjour <strong>${teamName}</strong>,</p>
@@ -74,7 +75,7 @@ export const sendBookingRefusal = async ({ to, teamName, date, starttime, endtim
   console.log("📧 E-mail de refus envoyé : %s", info.messageId);
 };
 
-// 🎉 Bienvenue après inscription
+// 🎉 Bienvenue
 export const sendWelcomeEmail = async ({ to, username }) => {
   const content = `
     <p>Bienvenue <strong>${username}</strong> 👋</p>

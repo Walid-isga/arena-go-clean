@@ -39,7 +39,7 @@ export default function FieldDetails() {
           <CardMedia
             component="img"
             height="250"
-            image={`https://arena-go-clean-production.up.railway.app/uploads/${field.photos[0]?.replace(/^uploads[\\/]+/, "")}`}
+            image={`http://205.209.106.203:5001/uploads/${field.photos[0]?.replace(/^uploads[\\/]+/, "")}`}
             alt={field.name}
             sx={{
               objectFit: "cover",
