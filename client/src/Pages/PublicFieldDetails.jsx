@@ -57,7 +57,7 @@ export default function PublicFieldDetails() {
           {field.photos?.[0] && (
             <Box sx={{ width: "100%", height: { xs: 220, sm: 300 }, overflow: "hidden" }}>
               <img
-                src={`https://arenago-production.up.railway.app/uploads/${field.photos[0].replace(/^uploads[\\/]+/, "")}`}
+                src={`https://arena-go-clean-production.up.railway.app/uploads/${field.photos[0].replace(/^uploads[\\/]+/, "")}`}
                 alt={field.name}
                 style={{
                   width: "100%",

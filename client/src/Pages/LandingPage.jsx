@@ -80,7 +80,7 @@ export default function LandingPage() {
             const isEven = index % 2 === 0;
             const photoPath = field.photos?.[0];
             const imageUrl = photoPath
-              ? `https://arenago-production.up.railway.app/uploads/${photoPath.replace(/^uploads[\\/]+/, "")}`
+              ? `https://arena-go-clean-production.up.railway.app/uploads/${photoPath.replace(/^uploads[\\/]+/, "")}`
               : null;
 
             return (
